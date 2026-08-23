@@ -149,7 +149,7 @@
             cursor: default;
         }
 
-        /* Ticket Preview Panel (Image 1 Style) */
+        /* Ticket Preview Panel */
         .selected-tickets-panel {
             display: none;
             background-color: #090f17;
@@ -246,7 +246,7 @@
         .badge-value { color: #00aaff; font-size: 11px; font-weight: bold; }
         .badge-sub { font-size: 8px; color: #8a99ad; }
 
-        /* --- STAGE 2: LIVE DRAW VIEW (Image 2 Style) --- */
+        /* STAGE 2: LIVE DRAW VIEW */
         .draw-stage {
             display: none;
             flex-direction: column;
@@ -344,6 +344,74 @@
             padding: 8px;
             font-size: 10px;
             color: #00e676;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Ticket Card in Live Draw */
+        .live-ticket-card {
+            background: #ffffff;
+            color: #000000;
+            border-radius: 6px;
+            padding: 6px;
+            width: 100%;
+            max-width: 140px;
+            margin-top: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .live-ticket-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .live-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+        }
+
+        .live-grid-header {
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            padding: 2px 0;
+            font-size: 8px;
+        }
+
+        .live-grid-header.b { background-color: #2196f3; }
+        .live-grid-header.i { background-color: #9c27b0; }
+        .live-grid-header.n { background-color: #e91e63; }
+        .live-grid-header.g { background-color: #4caf50; }
+        .live-grid-header.o { background-color: #ff9800; }
+
+        .live-grid-cell {
+            background-color: #ffffff;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 18px;
+            font-size: 9px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .live-grid-cell.star {
+            background-color: #000000;
+            color: #ffffff;
+            font-size: 10px;
+        }
+
+        .live-grid-cell.hit {
+            background-color: #000000;
+            color: #ffffff;
         }
 
         /* Call History Bar */
@@ -443,7 +511,7 @@
         <!-- Number Grid (181 to 380) -->
         <main class="grid-container" id="bingoGrid"></main>
 
-        <!-- Selected Tickets Preview (Image 1 Bottom Panel) -->
+        <!-- Selected Tickets Preview -->
         <div class="selected-tickets-panel" id="ticketsPreviewPanel">
             <div class="panel-header">
                 <span>የመረጧቸው ካርቴላዎች: <span id="panelCount">0</span></span>
@@ -453,7 +521,7 @@
         </div>
     </div>
 
-    <!-- STAGE 2: LIVE DRAW VIEW (Image 2 Layout) -->
+    <!-- STAGE 2: LIVE DRAW VIEW -->
     <div id="drawStage" class="draw-stage">
         <!-- Live Draw Stats Bar -->
         <div class="dashboard" style="grid-template-columns: repeat(4, 1fr); padding: 0;">
@@ -488,7 +556,7 @@
                 <div class="main-ball-display" id="mainBallDisplay">--</div>
                 <div class="ticket-view-box">
                     <div>የእኔ ካርቴላ (My Ticket)</div>
-                    <div id="liveTicketPreview" style="margin-top: 5px;"></div>
+                    <div id="liveTicketPreview" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
                 </div>
             </div>
         </div>
@@ -592,7 +660,7 @@
         updateUI();
     }
 
-    // Generate Mock 5x5 Matrix for Ticket Card
+    // Generate Standard Standardized 5x5 Bingo Matrix for Ticket Card
     function generateCardMatrix(ticketNum) {
         const matrix = [];
         for (let row = 0; row < 5; row++) {
@@ -602,8 +670,7 @@
                     rowData.push('★');
                 } else {
                     const min = col * 15 + 1;
-                    const max = min + 14;
-                    const num = (ticketNum + row * 5 + col) % 15 + min;
+                    const num = ((ticketNum * 7 + row * 3 + col) % 15) + min;
                     rowData.push(num);
                 }
             }
@@ -612,7 +679,7 @@
         return matrix;
     }
 
-    // Render Preview Cards Panel (Image 1)
+    // Render Preview Cards Panel (Stage 1)
     function renderPreviewCards() {
         if (selectedTickets.length === 0) {
             ticketsPreviewPanel.classList.remove('active');
@@ -647,7 +714,7 @@
     }
 
     function updatePrizePool() {
-        const totalTickets = selectedTickets.length + 100; // Simulated extra players
+        const totalTickets = selectedTickets.length + 100;
         const grossPool = totalTickets * TICKET_PRICE;
         prizePool = Math.max(0, grossPool - BOT_COMMISSION);
     }
@@ -676,7 +743,7 @@
         }, 1000);
     }
 
-    // --- LIVE DRAWING STAGE LOGIC (Image 2) ---
+    // --- LIVE DRAWING STAGE LOGIC ---
     function startLiveDrawStage() {
         selectionStage.style.display = 'none';
         drawStage.classList.add('active');
@@ -684,16 +751,45 @@
         drawnBalls = [];
         remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
-        // Render My Ticket into Live Panel
-        const liveTicketContainer = document.getElementById('liveTicketPreview');
-        if (selectedTickets.length > 0) {
-            liveTicketContainer.innerHTML = `<div>#${selectedTickets[0]} Active</div>`;
-        } else {
-            liveTicketContainer.innerHTML = `<div>No Ticket</div>`;
-        }
+        renderLiveTicket();
 
         // Start Auto Ball Draw Loop
         drawInterval = setInterval(drawNextBall, 2000);
+    }
+
+    // Build Live Ticket Panel with matching highlights
+    function renderLiveTicket() {
+        const liveTicketContainer = document.getElementById('liveTicketPreview');
+        if (selectedTickets.length === 0) {
+            liveTicketContainer.innerHTML = `<div style="margin-top:10px; color:#8a99ad;">No Ticket Selected</div>`;
+            return;
+        }
+
+        const ticketNum = selectedTickets[0]; // Active ticket
+        const matrix = generateCardMatrix(ticketNum);
+
+        let html = `<div class="live-ticket-card">
+            <div class="live-ticket-title">#${ticketNum}</div>
+            <div class="live-grid">
+                <div class="live-grid-header b">B</div>
+                <div class="live-grid-header i">I</div>
+                <div class="live-grid-header n">N</div>
+                <div class="live-grid-header g">G</div>
+                <div class="live-grid-header o">O</div>`;
+
+        for (let r = 0; r < 5; r++) {
+            for (let c = 0; c < 5; c++) {
+                const val = matrix[r][c];
+                if (val === '★') {
+                    html += `<div class="live-grid-cell star">★</div>`;
+                } else {
+                    const isHit = drawnBalls.includes(val);
+                    html += `<div class="live-grid-cell ${isHit ? 'hit' : ''}" id="live-cell-${val}">${val}</div>`;
+                }
+            }
+        }
+        html += `</div></div>`;
+        liveTicketContainer.innerHTML = html;
     }
 
     // Build Board (1 to 75 Grid Columns: B I N G O)
@@ -702,7 +798,7 @@
         const letters = ['B', 'I', 'N', 'G', 'O'];
         const classes = ['header-b', 'header-i', 'header-n', 'header-g', 'header-o'];
         
-        headers = letters.map((l, i) => `<div class="board-header ${classes[i]}">${l}</div>`).join('');
+        let headers = letters.map((l, i) => `<div class="board-header ${classes[i]}">${l}</div>`).join('');
         board75.innerHTML += headers;
 
         for (let row = 0; row < 15; row++) {
@@ -737,11 +833,17 @@
 
         const formattedBall = `${letter}-${ballNum}`;
 
-        // Highlight Cell on Board
+        // Highlight Cell on 1-75 Board
         const currentCell = document.getElementById(`cell-${ballNum}`);
         if (currentCell) {
             document.querySelectorAll('.board-cell').forEach(c => c.classList.remove('current-call'));
             currentCell.classList.add('called', 'current-call');
+        }
+
+        // Highlight Cell on My Ticket Card if matched
+        const ticketCell = document.getElementById(`live-cell-${ballNum}`);
+        if (ticketCell) {
+            ticketCell.classList.add('hit');
         }
 
         // Update Main Ball Display
