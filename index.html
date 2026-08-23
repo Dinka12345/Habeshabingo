@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bingo Habesha</title>
+    <!-- Supabase JS CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -563,15 +565,25 @@
 </div>
 
 <script>
+    // --- SUPABASE CONFIGURATION ---
+    const SUPABASE_URL = 'https://ntgzhyvxtociwcnhntje.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50Z3poeXZ4dG9jaXdjbmhudGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTM4ODMsImV4cCI6MjEwMzA2OTg4M30.83YzZ61MtfV2C6ikPV7eWp8ywvC-XUBasbfRF4NBkBI';
+    
+    // Initialize Supabase Client
+    const supabaseClient = (typeof supabase !== 'undefined')
+        ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
+
+    // Default User Setup
+    const CURRENT_USER_ID = 'demo_user_123';
+
     const TICKET_PRICE = 10;
     const BOT_COMMISSION = 10; 
     const MAX_SELECTIONS = 4;
     const GAME_DURATION = 30; 
     const DEFAULT_INITIAL_BALANCE = 500.00;
 
-    // Load persisted balance from LocalStorage or default to 500 ETB
     let userBalance = parseFloat(localStorage.getItem('bingo_user_balance')) || DEFAULT_INITIAL_BALANCE;
-
     let selectedTickets = [];
     let prizePool = 0.00;
     let timeRemaining = GAME_DURATION;
@@ -602,6 +614,7 @@
 
     const disabledNumbers = [201, 208, 209, 215, 274, 275, 283, 361, 379];
 
+    // Build grid items
     for (let i = 181; i <= 380; i++) {
         const item = document.createElement('div');
         item.classList.add('grid-item');
@@ -615,10 +628,61 @@
         grid.appendChild(item);
     }
 
-    // Save Balance Function
-    function saveBalance(amount) {
+    // Load initial balance from Supabase if connected
+    async function fetchUserBalanceFromSupabase() {
+        if (!supabaseClient) return;
+        try {
+            const { data, error } = await supabaseClient
+                .from('user_profiles')
+                .select('balance')
+                .eq('user_id', CURRENT_USER_ID)
+                .single();
+
+            if (data && !error) {
+                userBalance = parseFloat(data.balance);
+                localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+                updateUI();
+            }
+        } catch (err) {
+            console.warn('Could not fetch from Supabase, using local fallback:', err);
+        }
+    }
+
+    // Save Balance Function (Syncs to LocalStorage and Supabase)
+    async function saveBalance(amount) {
         userBalance = amount;
         localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+
+        if (supabaseClient) {
+            try {
+                await supabaseClient
+                    .from('user_profiles')
+                    .upsert({ 
+                        user_id: CURRENT_USER_ID, 
+                        balance: userBalance,
+                        updated_at: new Date()
+                    });
+            } catch (err) {
+                console.error('Failed to sync balance with Supabase:', err);
+            }
+        }
+    }
+
+    // Sync Game Round to Supabase
+    async function syncGameRoundToSupabase(tickets, prize) {
+        if (!supabaseClient) return;
+        try {
+            await supabaseClient
+                .from('game_rounds')
+                .insert([{
+                    user_id: CURRENT_USER_ID,
+                    tickets_bought: tickets,
+                    total_prize: prize,
+                    created_at: new Date()
+                }]);
+        } catch (err) {
+            console.error('Failed to save round to Supabase:', err);
+        }
     }
 
     function toggleTicketSelection(number, element) {
@@ -627,7 +691,6 @@
         const index = selectedTickets.indexOf(number);
 
         if (index > -1) {
-            // Deselect and refund
             selectedTickets.splice(index, 1);
             element.classList.remove('selected');
             saveBalance(userBalance + TICKET_PRICE);
@@ -641,7 +704,6 @@
                 return;
             }
 
-            // Select and deduct balance
             selectedTickets.push(number);
             element.classList.add('selected');
             saveBalance(userBalance - TICKET_PRICE);
@@ -738,6 +800,7 @@
         remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
         renderLiveTicket();
+        syncGameRoundToSupabase(selectedTickets, prizePool);
         drawInterval = setInterval(drawNextBall, 2000);
     }
 
@@ -836,6 +899,8 @@
         ballsCountDisplay.textContent = `${drawnBalls.length}/75`;
     }
 
+    // Initialize App
+    fetchUserBalanceFromSupabase();
     updateUI();
     startCountdown();
 </script>
