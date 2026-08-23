@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bingo Habesha Grid</title>
+  <style>
+    :root {
+      --bg-color: #0b1118;
+      --card-bg: #111a24;
+      --accent-green: #00e676;
+      --text-main: #ffffff;
+      --text-muted: #627282;
+      --grid-bg: #16222f;
+      --taken-bg: #0d151e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 480px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+
+    /* Header & Balance */
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .balance-box { background: var(--card-bg); padding: 10px 15px; border-radius: 8px; border: 1px solid #1f2d3d; text-align: center; }
+    .balance-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+    .balance-amount { font-size: 18px; font-weight: bold; color: #38ef7d; }
+
+    /* Info Bar */
+    .info-bar { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
+    .selection-counter { color: var(--accent-green); }
+
+    /* Numbers Grid */
+    .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-height: 50vh; overflow-y: auto; padding: 5px; background: var(--card-bg); border-radius: 8px; }
+    .num-btn { background: var(--grid-bg); color: var(--text-main); border: 1px solid #1f2d3d; border-radius: 4px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; }
+    .num-btn.selected { background: var(--accent-green); color: #000; font-weight: bold; box-shadow: 0 0 8px var(--accent-green); }
+    .num-btn.taken { background: var(--taken-bg); color: #23313f; border-color: transparent; cursor: not-allowed; }
+
+    /* Ticket Footer */
+    .footer { background: var(--card-bg); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid var(--accent-green); }
+    .total-price { font-size: 16px; font-weight: bold; color: var(--accent-green); }
+    .buy-btn { background: var(--accent-green); color: #000; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+    .buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>BINGO HABESHA</h2>
+    <div class="balance-box">
+      <div class="balance-label">Main Wallet</div>
+      <div class="balance-amount"><span id="balance">1400.50</span> ETB</div>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <span>ካርቴላ ይምረጡ (10 ብር)</span>
+    <span class="selection-counter"><span id="selected-count">0</span> / 4</span>
+  </div>
+
+  <!-- 1-800 Numbers Container -->
+  <div class="grid" id="number-grid"></div>
+
+  <div class="footer">
+    <div>
+      <div style="font-size: 12px; color: var(--text-muted);">የመረጧቸው ካርቴሎች: <span id="selected-list">0</span></div>
+      <div class="total-price"><span id="total-cost">0</span> ETB</div>
+    </div>
+    <button class="buy-btn" id="buy-btn" disabled onclick="confirmPurchase()">Confirm Selection</button>
+  </div>
+</div>
+
+<script>
+  const PRICE_PER_NUMBER = 10;
+  const MAX_SELECTIONS = 4;
+  let userBalance = 1400.50;
+  let selectedNumbers = [];
+
+  // Simulated database of numbers already taken by other users
+  const takenNumbers = [1, 3, 5, 6, 8, 10, 11, 13, 14, 15, 20, 21, 23, 25, 27, 29, 94, 96, 97, 99];
+
+  const gridContainer = document.getElementById('number-grid');
+
+  // Render 1 to 800 grid dynamically
+  for (let i = 1; i <= 800; i++) {
+    const btn = document.createElement('button');
+    btn.classList.add('num-btn');
+    btn.innerText = i;
+
+    // Check if taken by another user
+    if (takenNumbers.includes(i)) {
+      btn.classList.add('taken');
+      btn.disabled = true;
+    } else {
+      btn.addEventListener('click', () => toggleSelect(i, btn));
+    }
+
+    gridContainer.appendChild(btn);
+  }
+
+  function toggleSelect(num, element) {
+    if (selectedNumbers.includes(num)) {
+      // Unselect
+      selectedNumbers = selectedNumbers.filter(n => n !== num);
+      element.classList.remove('selected');
+    } else {
+      // Check max allowed selections
+      if (selectedNumbers.length >= MAX_SELECTIONS) {
+        alert(`You can only select up to ${MAX_SELECTIONS} numbers at a time.`);
+        return;
+      }
+      // Check if user has sufficient balance
+      if ((selectedNumbers.length + 1) * PRICE_PER_NUMBER > userBalance) {
+        alert("Insufficient balance!");
+        return;
+      }
+      // Select
+      selectedNumbers.push(num);
+      element.classList.add('selected');
+    }
+
+    updateUI();
+  }
+
+  function updateUI() {
+    const count = selectedNumbers.length;
+    const totalCost = count * PRICE_PER_NUMBER;
+
+    document.getElementById('selected-count').innerText = count;
+    document.getElementById('selected-list').innerText = count;
+    document.getElementById('total-cost').innerText = totalCost;
+    document.getElementById('buy-btn').disabled = count === 0;
+  }
+
+  function confirmPurchase() {
+    const totalCost = selectedNumbers.length * PRICE_PER_NUMBER;
+    
+    // Deduct balance automatically
+    userBalance -= totalCost;
+    document.getElementById('balance').innerText = userBalance.toFixed(2);
+
+    // Mark newly bought numbers as taken (prevents re-selection)
+    selectedNumbers.forEach(num => {
+      takenNumbers.push(num);
+      const buttons = document.querySelectorAll('.num-btn');
+      buttons[num - 1].classList.remove('selected');
+      buttons[num - 1].classList.add('taken');
+      buttons[num - 1].disabled = true;
+    });
+
+    alert(`Successfully purchased numbers: ${selectedNumbers.join(', ')} for ${totalCost} ETB!`);
+    
+    // Reset selection state
+    selectedNumbers = [];
+    updateUI();
+  }
+</script>
+
+</body>
+</html>
