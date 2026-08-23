@@ -261,7 +261,6 @@
             gap: 10px;
         }
 
-        /* 1 to 75 Grid Board */
         .bingo-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -314,7 +313,6 @@
             100% { transform: scale(1.05); }
         }
 
-        /* Right Call Display Panel */
         .call-display-panel {
             width: 45%;
             display: flex;
@@ -349,7 +347,6 @@
             align-items: center;
         }
 
-        /* Ticket Card in Live Draw */
         .live-ticket-card {
             background: #ffffff;
             color: #000000;
@@ -414,7 +411,6 @@
             color: #ffffff;
         }
 
-        /* Call History Bar */
         .history-bar {
             display: flex;
             gap: 8px;
@@ -434,7 +430,6 @@
             font-weight: bold;
         }
 
-        /* Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -466,7 +461,6 @@
 <body>
 
 <div class="app-container">
-    <!-- Top Bar -->
     <header class="top-bar">
         <div class="logo-area">
             <div class="logo-title">ቢንጎ ሀበሻ</div>
@@ -478,7 +472,6 @@
         </div>
     </header>
 
-    <!-- User Balance Header -->
     <div class="user-balance-bar">
         <span>የእርስዎ ባላንስ (Balance):</span>
         <span class="user-balance-amount"><span id="userBalance">500.00</span> ETB</span>
@@ -486,7 +479,6 @@
 
     <!-- STAGE 1: SELECTION VIEW -->
     <div id="selectionStage">
-        <!-- Dashboard -->
         <section class="dashboard">
             <div class="stat-card">
                 <div class="stat-label">ጨዋታው ሊጀመር ነው</div>
@@ -502,16 +494,13 @@
             </div>
         </section>
 
-        <!-- Selection Bar -->
         <div class="selection-bar">
             <div class="selection-title">ካርቴላ ይምረጡ (10 ብር)</div>
             <div class="selection-count"><span id="selectedCount">0</span> <span>/ 4</span></div>
         </div>
 
-        <!-- Number Grid (181 to 380) -->
         <main class="grid-container" id="bingoGrid"></main>
 
-        <!-- Selected Tickets Preview -->
         <div class="selected-tickets-panel" id="ticketsPreviewPanel">
             <div class="panel-header">
                 <span>የመረጧቸው ካርቴላዎች: <span id="panelCount">0</span></span>
@@ -523,7 +512,6 @@
 
     <!-- STAGE 2: LIVE DRAW VIEW -->
     <div id="drawStage" class="draw-stage">
-        <!-- Live Draw Stats Bar -->
         <div class="dashboard" style="grid-template-columns: repeat(4, 1fr); padding: 0;">
             <div class="stat-card">
                 <div class="stat-label">#ዙር (Round)</div>
@@ -543,15 +531,11 @@
             </div>
         </div>
 
-        <!-- History Called Balls Bar -->
         <div class="history-bar" id="historyBar"></div>
 
-        <!-- Main Live Draw Area -->
         <div class="draw-board-container">
-            <!-- 1 to 75 Bingo Board Grid -->
             <div class="bingo-board" id="board75"></div>
 
-            <!-- Main Call & My Ticket Panel -->
             <div class="call-display-panel">
                 <div class="main-ball-display" id="mainBallDisplay">--</div>
                 <div class="ticket-view-box">
@@ -562,7 +546,6 @@
         </div>
     </div>
 
-    <!-- Floating Live Badge -->
     <div class="floating-badge">
         <div class="live-tag">LIVE</div>
         <div class="badge-sub">ደራሽ</div>
@@ -570,7 +553,6 @@
         <div class="badge-sub">ETB</div>
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <a href="#" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
         <a href="#" class="nav-item active"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
@@ -585,8 +567,11 @@
     const BOT_COMMISSION = 10; 
     const MAX_SELECTIONS = 4;
     const GAME_DURATION = 30; 
+    const DEFAULT_INITIAL_BALANCE = 500.00;
 
-    let userBalance = 500.00;
+    // Load persisted balance from LocalStorage or default to 500 ETB
+    let userBalance = parseFloat(localStorage.getItem('bingo_user_balance')) || DEFAULT_INITIAL_BALANCE;
+
     let selectedTickets = [];
     let prizePool = 0.00;
     let timeRemaining = GAME_DURATION;
@@ -596,7 +581,6 @@
     let drawnBalls = [];
     let remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
-    // DOM Elements
     const grid = document.getElementById('bingoGrid');
     const balanceDisplay = document.getElementById('userBalance');
     const prizeDisplay = document.getElementById('prizePool');
@@ -618,7 +602,6 @@
 
     const disabledNumbers = [201, 208, 209, 215, 274, 275, 283, 361, 379];
 
-    // Build Selection Grid (181 to 380)
     for (let i = 181; i <= 380; i++) {
         const item = document.createElement('div');
         item.classList.add('grid-item');
@@ -632,16 +615,22 @@
         grid.appendChild(item);
     }
 
-    // Toggle Ticket Selection
+    // Save Balance Function
+    function saveBalance(amount) {
+        userBalance = amount;
+        localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+    }
+
     function toggleTicketSelection(number, element) {
         if (timeRemaining <= 0) return;
 
         const index = selectedTickets.indexOf(number);
 
         if (index > -1) {
+            // Deselect and refund
             selectedTickets.splice(index, 1);
             element.classList.remove('selected');
-            userBalance += TICKET_PRICE;
+            saveBalance(userBalance + TICKET_PRICE);
         } else {
             if (selectedTickets.length >= MAX_SELECTIONS) {
                 alert(`ከ ${MAX_SELECTIONS} በላይ መምረጥ አይችሉም!`);
@@ -652,15 +641,15 @@
                 return;
             }
 
+            // Select and deduct balance
             selectedTickets.push(number);
             element.classList.add('selected');
-            userBalance -= TICKET_PRICE;
+            saveBalance(userBalance - TICKET_PRICE);
         }
 
         updateUI();
     }
 
-    // Generate Standard Standardized 5x5 Bingo Matrix for Ticket Card
     function generateCardMatrix(ticketNum) {
         const matrix = [];
         for (let row = 0; row < 5; row++) {
@@ -679,7 +668,6 @@
         return matrix;
     }
 
-    // Render Preview Cards Panel (Stage 1)
     function renderPreviewCards() {
         if (selectedTickets.length === 0) {
             ticketsPreviewPanel.classList.remove('active');
@@ -729,7 +717,6 @@
         renderPreviewCards();
     }
 
-    // Dynamic Selection Countdown Timer
     function startCountdown() {
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -743,7 +730,6 @@
         }, 1000);
     }
 
-    // --- LIVE DRAWING STAGE LOGIC ---
     function startLiveDrawStage() {
         selectionStage.style.display = 'none';
         drawStage.classList.add('active');
@@ -752,12 +738,9 @@
         remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
         renderLiveTicket();
-
-        // Start Auto Ball Draw Loop
         drawInterval = setInterval(drawNextBall, 2000);
     }
 
-    // Build Live Ticket Panel with matching highlights
     function renderLiveTicket() {
         const liveTicketContainer = document.getElementById('liveTicketPreview');
         if (selectedTickets.length === 0) {
@@ -765,7 +748,7 @@
             return;
         }
 
-        const ticketNum = selectedTickets[0]; // Active ticket
+        const ticketNum = selectedTickets[0]; 
         const matrix = generateCardMatrix(ticketNum);
 
         let html = `<div class="live-ticket-card">
@@ -792,7 +775,6 @@
         liveTicketContainer.innerHTML = html;
     }
 
-    // Build Board (1 to 75 Grid Columns: B I N G O)
     function build75Board() {
         board75.innerHTML = '';
         const letters = ['B', 'I', 'N', 'G', 'O'];
@@ -813,7 +795,6 @@
         }
     }
 
-    // Draw Next Random Ball
     function drawNextBall() {
         if (remainingBalls.length === 0 || drawnBalls.length >= 75) {
             clearInterval(drawInterval);
@@ -833,34 +814,28 @@
 
         const formattedBall = `${letter}-${ballNum}`;
 
-        // Highlight Cell on 1-75 Board
         const currentCell = document.getElementById(`cell-${ballNum}`);
         if (currentCell) {
             document.querySelectorAll('.board-cell').forEach(c => c.classList.remove('current-call'));
             currentCell.classList.add('called', 'current-call');
         }
 
-        // Highlight Cell on My Ticket Card if matched
         const ticketCell = document.getElementById(`live-cell-${ballNum}`);
         if (ticketCell) {
             ticketCell.classList.add('hit');
         }
 
-        // Update Main Ball Display
         mainBallDisplay.textContent = formattedBall;
 
-        // Update History Bar (Last 3 Balls)
         const recentBalls = drawnBalls.slice(-3).reverse();
         historyBar.innerHTML = recentBalls.map(num => {
             let l = num <= 15 ? 'B' : num <= 30 ? 'I' : num <= 45 ? 'N' : num <= 60 ? 'G' : 'O';
             return `<div class="history-ball">${l}-${num}</div>`;
         }).join('');
 
-        // Update Counters
         ballsCountDisplay.textContent = `${drawnBalls.length}/75`;
     }
 
-    // Initialize Game
     updateUI();
     startCountdown();
 </script>
