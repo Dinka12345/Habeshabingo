@@ -81,6 +81,22 @@
             color: #0d1520;
         }
 
+        /* Balance Display */
+        .user-balance-bar {
+            background-color: #141f2d;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e2d42;
+            font-size: 12px;
+        }
+
+        .user-balance-amount {
+            color: #00e676;
+            font-weight: bold;
+        }
+
         /* Dashboard Stats */
         .dashboard {
             display: grid;
@@ -166,6 +182,13 @@
             color: #7a8b9e;
             cursor: pointer;
             user-select: none;
+        }
+
+        .grid-item.selected {
+            background-color: #00e676;
+            color: #0d1520;
+            font-weight: bold;
+            border-color: #00e676;
         }
 
         .grid-item.disabled {
@@ -265,15 +288,21 @@
         </div>
     </header>
 
+    <!-- User Balance Header -->
+    <div class="user-balance-bar">
+        <span>የእርስዎ ባላንስ (Balance):</span>
+        <span class="user-balance-amount"><span id="userBalance">500.00</span> ETB</span>
+    </div>
+
     <!-- Dashboard -->
     <section class="dashboard">
         <div class="stat-card">
             <div class="stat-label">ጨዋታው ሊጀመር ነው</div>
-            <div class="stat-value-timer">00:39</div>
+            <div class="stat-value-timer" id="timerDisplay">00:30</div>
         </div>
         <div class="stat-card active">
             <div class="stat-label">ደራሽ</div>
-            <div class="stat-value-price">471.00 <span class="currency">ETB</span></div>
+            <div class="stat-value-price"><span id="prizePool">0.00</span> <span class="currency">ETB</span></div>
         </div>
         <div class="stat-card">
             <div class="stat-label">የደራሽ ቦነስ በቅርቡ ይወጣል</div>
@@ -284,7 +313,7 @@
     <!-- Selection Bar -->
     <div class="selection-bar">
         <div class="selection-title">ካርቴላ ይምረጡ (10 ብር)</div>
-        <div class="selection-count">0 <span>/ 4</span></div>
+        <div class="selection-count"><span id="selectedCount">0</span> <span>/ 4</span></div>
     </div>
 
     <!-- Number Grid (181 to 380) -->
@@ -294,7 +323,7 @@
     <div class="floating-badge">
         <div class="live-tag">LIVE</div>
         <div class="badge-sub">ደራሽ</div>
-        <div class="badge-value">471.00</div>
+        <div class="badge-value" id="badgePrizePool">0.00</div>
         <div class="badge-sub">ETB</div>
     </div>
 
@@ -324,10 +353,30 @@
 </div>
 
 <script>
-    // Script to generate the grid programmatically
+    // Game Rules & Logic Setup
+    const TICKET_PRICE = 10;
+    const BOT_COMMISSION = 10; 
+    const MAX_SELECTIONS = 4;
+    const GAME_DURATION = 30; // Seconds
+
+    let userBalance = 500.00;
+    let selectedTickets = [];
+    let activeParticipantsCount = 0; 
+    let prizePool = 0.00;
+    let timeRemaining = GAME_DURATION;
+    let timerInterval = null;
+
+    // DOM Elements
     const grid = document.getElementById('bingoGrid');
+    const balanceDisplay = document.getElementById('userBalance');
+    const prizeDisplay = document.getElementById('prizePool');
+    const badgePrizeDisplay = document.getElementById('badgePrizePool');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const selectedCountDisplay = document.getElementById('selectedCount');
+
     const disabledNumbers = [201, 208, 209, 215, 274, 275, 283, 361, 379];
 
+    // Build Interactive Grid
     for (let i = 181; i <= 380; i++) {
         const item = document.createElement('div');
         item.classList.add('grid-item');
@@ -336,10 +385,113 @@
             item.classList.add('disabled');
         } else {
             item.textContent = i;
+            item.addEventListener('click', () => toggleTicketSelection(i, item));
         }
         
         grid.appendChild(item);
     }
+
+    // Toggle Ticket Selection
+    function toggleTicketSelection(number, element) {
+        if (timeRemaining <= 0) {
+            alert('ጨዋታው ተጀምሯል! (Game has already started!)');
+            return;
+        }
+
+        const index = selectedTickets.indexOf(number);
+
+        if (index > -1) {
+            // Deselect Ticket
+            selectedTickets.splice(index, 1);
+            element.classList.remove('selected');
+            userBalance += TICKET_PRICE;
+            activeParticipantsCount--;
+        } else {
+            // Select Ticket
+            if (selectedTickets.length >= MAX_SELECTIONS) {
+                alert(`ከ ${MAX_SELECTIONS} በላይ መምረጥ አይችሉም! (Maximum ${MAX_SELECTIONS} tickets allowed)`);
+                return;
+            }
+            if (userBalance < TICKET_PRICE) {
+                alert('በቂ ባላንስ የለዎትም! (Insufficient balance!)');
+                return;
+            }
+
+            selectedTickets.push(number);
+            element.classList.add('selected');
+            userBalance -= TICKET_PRICE;
+            activeParticipantsCount++;
+        }
+
+        updateUI();
+    }
+
+    // Calculate dynamic prize pool based on total tickets bought
+    function updatePrizePool() {
+        const grossPool = activeParticipantsCount * TICKET_PRICE;
+        prizePool = Math.max(0, grossPool - BOT_COMMISSION);
+    }
+
+    // Update Text Elements
+    function updateUI() {
+        updatePrizePool();
+        balanceDisplay.textContent = userBalance.toFixed(2);
+        prizeDisplay.textContent = prizePool.toFixed(2);
+        badgePrizeDisplay.textContent = prizePool.toFixed(2);
+        selectedCountDisplay.textContent = selectedTickets.length;
+    }
+
+    // Dynamic Timer Loop
+    function startCountdown() {
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            
+            const seconds = timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining;
+            timerDisplay.textContent = `00:${seconds}`;
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                resolveWinner();
+            }
+        }, 1000);
+    }
+
+    // Winner Resolution & Reset
+    function resolveWinner() {
+        if (activeParticipantsCount === 0) {
+            alert('ምንም ተጫዋች አልተሳተፈም። (No tickets selected. Restarting game...)');
+            resetGame();
+            return;
+        }
+
+        // Pick a winning ticket randomly from selected tickets
+        const winningTicket = selectedTickets[Math.floor(Math.random() * selectedTickets.length)];
+        
+        alert(`🎉 የዕጣው ቁጥር ${winningTicket} ወጥቷል! \nአሸናፊው ${prizePool.toFixed(2)} ETB ወስዷል።`);
+        
+        // Award prize pool to the balance
+        userBalance += prizePool;
+        
+        resetGame();
+    }
+
+    // Reset game state for next round
+    function resetGame() {
+        selectedTickets = [];
+        activeParticipantsCount = 0;
+        timeRemaining = GAME_DURATION;
+        
+        // Clear selected classes from UI
+        const gridItems = document.querySelectorAll('.grid-item');
+        gridItems.forEach(item => item.classList.remove('selected'));
+
+        updateUI();
+        startCountdown();
+    }
+
+    // Initialize Game
+    updateUI();
+    startCountdown();
 </script>
 
 </body>
