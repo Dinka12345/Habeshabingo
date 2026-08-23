@@ -39,24 +39,9 @@
             background-color: #0d1520;
         }
 
-        .logo-area {
-            text-align: center;
-            flex-grow: 1;
-        }
-
-        .logo-title {
-            color: #00e676;
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .logo-subtitle {
-            font-size: 10px;
-            color: #8a99ad;
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
+        .logo-area { text-align: center; flex-grow: 1; }
+        .logo-title { color: #00e676; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        .logo-subtitle { font-size: 10px; color: #8a99ad; letter-spacing: 2px; margin-top: 2px; }
 
         .lang-toggle {
             display: flex;
@@ -76,10 +61,7 @@
             cursor: pointer;
         }
 
-        .lang-btn.active {
-            background-color: #ffffff;
-            color: #0d1520;
-        }
+        .lang-btn.active { background-color: #ffffff; color: #0d1520; }
 
         /* Balance Display */
         .user-balance-bar {
@@ -92,10 +74,7 @@
             font-size: 12px;
         }
 
-        .user-balance-amount {
-            color: #00e676;
-            font-weight: bold;
-        }
+        .user-balance-amount { color: #00e676; font-weight: bold; }
 
         /* Dashboard Stats */
         .dashboard {
@@ -113,32 +92,11 @@
             text-align: center;
         }
 
-        .stat-card.active {
-            border-color: #0088cc;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: #8a99ad;
-            margin-bottom: 4px;
-        }
-
-        .stat-value-timer {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .stat-value-price {
-            font-size: 16px;
-            font-weight: bold;
-            color: #00aaff;
-        }
-
-        .currency {
-            font-size: 9px;
-            color: #8a99ad;
-        }
+        .stat-card.active { border-color: #0088cc; }
+        .stat-label { font-size: 10px; color: #8a99ad; margin-bottom: 4px; }
+        .stat-value-timer { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .stat-value-price { font-size: 16px; font-weight: bold; color: #00aaff; }
+        .currency { font-size: 9px; color: #8a99ad; }
 
         /* Selection Bar */
         .selection-bar {
@@ -148,19 +106,9 @@
             font-size: 13px;
         }
 
-        .selection-title {
-            color: #ffffff;
-            font-weight: 500;
-        }
-
-        .selection-count {
-            color: #00e676;
-            font-weight: bold;
-        }
-
-        .selection-count span {
-            color: #8a99ad;
-        }
+        .selection-title { color: #ffffff; font-weight: 500; }
+        .selection-count { color: #00e676; font-weight: bold; }
+        .selection-count span { color: #8a99ad; }
 
         /* Number Grid */
         .grid-container {
@@ -168,6 +116,8 @@
             grid-template-columns: repeat(10, 1fr);
             gap: 4px;
             padding: 0 12px 12px 12px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .grid-item {
@@ -189,6 +139,7 @@
             color: #0d1520;
             font-weight: bold;
             border-color: #00e676;
+            box-shadow: 0 0 8px rgba(0,230,118,0.5);
         }
 
         .grid-item.disabled {
@@ -197,6 +148,72 @@
             color: transparent;
             cursor: default;
         }
+
+        /* Ticket Preview Panel (Image 1 Style) */
+        .selected-tickets-panel {
+            display: none;
+            background-color: #090f17;
+            border-top: 2px solid #00e676;
+            padding: 10px 16px;
+            margin-top: auto;
+        }
+
+        .selected-tickets-panel.active { display: block; }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .cards-list {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .mini-card {
+            background: #ffffff;
+            color: #000;
+            border-radius: 6px;
+            padding: 4px;
+            width: 100px;
+            flex-shrink: 0;
+            font-size: 8px;
+            text-align: center;
+        }
+
+        .mini-card-title { font-weight: bold; color: #111; margin-bottom: 2px; }
+        
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background-color: #ccc;
+            border: 1px solid #999;
+        }
+
+        .mini-grid-header {
+            background-color: #0088cc;
+            color: #fff;
+            font-weight: bold;
+            padding: 1px 0;
+        }
+
+        .mini-grid-cell {
+            background-color: #fff;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 14px;
+            font-size: 7px;
+        }
+
+        .mini-grid-cell.star { color: #0088cc; font-size: 9px; }
 
         /* Floating Badge */
         .floating-badge {
@@ -213,6 +230,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
         .live-tag {
@@ -224,20 +242,128 @@
             gap: 2px;
         }
 
-        .live-tag::before {
-            content: "•";
-            font-size: 12px;
+        .live-tag::before { content: "•"; font-size: 12px; }
+        .badge-value { color: #00aaff; font-size: 11px; font-weight: bold; }
+        .badge-sub { font-size: 8px; color: #8a99ad; }
+
+        /* --- STAGE 2: LIVE DRAW VIEW (Image 2 Style) --- */
+        .draw-stage {
+            display: none;
+            flex-direction: column;
+            padding: 10px;
+            gap: 10px;
         }
 
-        .badge-value {
-            color: #00aaff;
-            font-size: 11px;
+        .draw-stage.active { display: flex; }
+
+        .draw-board-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 1 to 75 Grid Board */
+        .bingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 3px;
+            flex: 1;
+            background: #09131d;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #1e2d42;
+        }
+
+        .board-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 2px 0;
+        }
+
+        .header-b { color: #2196f3; }
+        .header-i { color: #9c27b0; }
+        .header-n { color: #e91e63; }
+        .header-g { color: #4caf50; }
+        .header-o { color: #ff9800; }
+
+        .board-cell {
+            background-color: #121c27;
+            color: #4f6378;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 20px;
+            border-radius: 2px;
             font-weight: bold;
         }
 
-        .badge-sub {
-            font-size: 8px;
-            color: #8a99ad;
+        .board-cell.called {
+            background-color: #00e676;
+            color: #0d1520;
+            box-shadow: 0 0 6px #00e676;
+        }
+
+        .board-cell.current-call {
+            border: 2px solid #ffffff;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* Right Call Display Panel */
+        .call-display-panel {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .main-ball-display {
+            background: radial-gradient(circle, #0e2b45 0%, #081726 100%);
+            border: 3px solid #00e676;
+            border-radius: 50%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        }
+
+        .ticket-view-box {
+            background: #0d1a29;
+            border: 1px solid #1e2d42;
+            border-radius: 6px;
+            flex-grow: 1;
+            padding: 8px;
+            font-size: 10px;
+            color: #00e676;
+        }
+
+        /* Call History Bar */
+        .history-bar {
+            display: flex;
+            gap: 8px;
+            background: #09131d;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #1e2d42;
+        }
+
+        .history-ball {
+            background: #142838;
+            border: 1px solid #00e676;
+            color: #00e676;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         /* Bottom Navigation Bar */
@@ -252,6 +378,7 @@
             justify-content: space-around;
             align-items: center;
             border-top: 1px solid #141e2b;
+            z-index: 20;
         }
 
         .nav-item {
@@ -264,13 +391,8 @@
             text-decoration: none;
         }
 
-        .nav-item.active {
-            color: #ff4d4d;
-        }
-
-        .nav-icon {
-            font-size: 16px;
-        }
+        .nav-item.active { color: #ff4d4d; }
+        .nav-icon { font-size: 16px; }
     </style>
 </head>
 <body>
@@ -294,30 +416,83 @@
         <span class="user-balance-amount"><span id="userBalance">500.00</span> ETB</span>
     </div>
 
-    <!-- Dashboard -->
-    <section class="dashboard">
-        <div class="stat-card">
-            <div class="stat-label">ጨዋታው ሊጀመር ነው</div>
-            <div class="stat-value-timer" id="timerDisplay">00:30</div>
-        </div>
-        <div class="stat-card active">
-            <div class="stat-label">ደራሽ</div>
-            <div class="stat-value-price"><span id="prizePool">0.00</span> <span class="currency">ETB</span></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">የደራሽ ቦነስ በቅርቡ ይወጣል</div>
-            <div style="font-size: 16px; margin-top: 2px;">⏳</div>
-        </div>
-    </section>
+    <!-- STAGE 1: SELECTION VIEW -->
+    <div id="selectionStage">
+        <!-- Dashboard -->
+        <section class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">ጨዋታው ሊጀመር ነው</div>
+                <div class="stat-value-timer" id="timerDisplay">00:30</div>
+            </div>
+            <div class="stat-card active">
+                <div class="stat-label">ደራሽ</div>
+                <div class="stat-value-price"><span id="prizePool">0.00</span> <span class="currency">ETB</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">የደራሽ ቦነስ በቅርቡ ይወጣል</div>
+                <div style="font-size: 16px; margin-top: 2px;">⏳</div>
+            </div>
+        </section>
 
-    <!-- Selection Bar -->
-    <div class="selection-bar">
-        <div class="selection-title">ካርቴላ ይምረጡ (10 ብር)</div>
-        <div class="selection-count"><span id="selectedCount">0</span> <span>/ 4</span></div>
+        <!-- Selection Bar -->
+        <div class="selection-bar">
+            <div class="selection-title">ካርቴላ ይምረጡ (10 ብር)</div>
+            <div class="selection-count"><span id="selectedCount">0</span> <span>/ 4</span></div>
+        </div>
+
+        <!-- Number Grid (181 to 380) -->
+        <main class="grid-container" id="bingoGrid"></main>
+
+        <!-- Selected Tickets Preview (Image 1 Bottom Panel) -->
+        <div class="selected-tickets-panel" id="ticketsPreviewPanel">
+            <div class="panel-header">
+                <span>የመረጧቸው ካርቴላዎች: <span id="panelCount">0</span></span>
+                <span style="color: #00e676;"><span id="panelCost">0</span> ETB</span>
+            </div>
+            <div class="cards-list" id="previewCardsContainer"></div>
+        </div>
     </div>
 
-    <!-- Number Grid (181 to 380) -->
-    <main class="grid-container" id="bingoGrid"></main>
+    <!-- STAGE 2: LIVE DRAW VIEW (Image 2 Layout) -->
+    <div id="drawStage" class="draw-stage">
+        <!-- Live Draw Stats Bar -->
+        <div class="dashboard" style="grid-template-columns: repeat(4, 1fr); padding: 0;">
+            <div class="stat-card">
+                <div class="stat-label">#ዙር (Round)</div>
+                <div style="font-weight: bold; font-size: 12px;">#9815</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">መወዳደሪያ</div>
+                <div style="font-weight: bold; font-size: 12px; color:#00aaff;">10.00</div>
+            </div>
+            <div class="stat-card active">
+                <div class="stat-label">ሽልማት (Prize)</div>
+                <div style="font-weight: bold; font-size: 12px; color:#00e676;" id="livePrizeDisplay">0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">እጣ (Balls)</div>
+                <div style="font-weight: bold; font-size: 12px;" id="ballsCountDisplay">0/75</div>
+            </div>
+        </div>
+
+        <!-- History Called Balls Bar -->
+        <div class="history-bar" id="historyBar"></div>
+
+        <!-- Main Live Draw Area -->
+        <div class="draw-board-container">
+            <!-- 1 to 75 Bingo Board Grid -->
+            <div class="bingo-board" id="board75"></div>
+
+            <!-- Main Call & My Ticket Panel -->
+            <div class="call-display-panel">
+                <div class="main-ball-display" id="mainBallDisplay">--</div>
+                <div class="ticket-view-box">
+                    <div>የእኔ ካርቴላ (My Ticket)</div>
+                    <div id="liveTicketPreview" style="margin-top: 5px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Floating Live Badge -->
     <div class="floating-badge">
@@ -329,54 +504,53 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="#" class="nav-item active">
-            <span class="nav-icon">🎟️</span>
-            <span>Ticket</span>
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">💰</span>
-            <span>Wallet</span>
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">🏆</span>
-            <span>Rank</span>
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
-        </a>
+        <a href="#" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="#" class="nav-item active"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
+        <a href="#" class="nav-item"><span class="nav-icon">💰</span><span>Wallet</span></a>
+        <a href="#" class="nav-item"><span class="nav-icon">🏆</span><span>Rank</span></a>
+        <a href="#" class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
     </nav>
 </div>
 
 <script>
-    // Game Rules & Logic Setup
     const TICKET_PRICE = 10;
     const BOT_COMMISSION = 10; 
     const MAX_SELECTIONS = 4;
-    const GAME_DURATION = 30; // Seconds
+    const GAME_DURATION = 30; 
 
     let userBalance = 500.00;
     let selectedTickets = [];
-    let activeParticipantsCount = 0; 
     let prizePool = 0.00;
     let timeRemaining = GAME_DURATION;
     let timerInterval = null;
+    let drawInterval = null;
+
+    let drawnBalls = [];
+    let remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
     // DOM Elements
     const grid = document.getElementById('bingoGrid');
     const balanceDisplay = document.getElementById('userBalance');
     const prizeDisplay = document.getElementById('prizePool');
     const badgePrizeDisplay = document.getElementById('badgePrizePool');
+    const livePrizeDisplay = document.getElementById('livePrizeDisplay');
     const timerDisplay = document.getElementById('timerDisplay');
     const selectedCountDisplay = document.getElementById('selectedCount');
+    const ticketsPreviewPanel = document.getElementById('ticketsPreviewPanel');
+    const previewCardsContainer = document.getElementById('previewCardsContainer');
+    const panelCount = document.getElementById('panelCount');
+    const panelCost = document.getElementById('panelCost');
+
+    const selectionStage = document.getElementById('selectionStage');
+    const drawStage = document.getElementById('drawStage');
+    const board75 = document.getElementById('board75');
+    const mainBallDisplay = document.getElementById('mainBallDisplay');
+    const historyBar = document.getElementById('historyBar');
+    const ballsCountDisplay = document.getElementById('ballsCountDisplay');
 
     const disabledNumbers = [201, 208, 209, 215, 274, 275, 283, 361, 379];
 
-    // Build Interactive Grid
+    // Build Selection Grid (181 to 380)
     for (let i = 181; i <= 380; i++) {
         const item = document.createElement('div');
         item.classList.add('grid-item');
@@ -387,106 +561,201 @@
             item.textContent = i;
             item.addEventListener('click', () => toggleTicketSelection(i, item));
         }
-        
         grid.appendChild(item);
     }
 
     // Toggle Ticket Selection
     function toggleTicketSelection(number, element) {
-        if (timeRemaining <= 0) {
-            alert('ጨዋታው ተጀምሯል! (Game has already started!)');
-            return;
-        }
+        if (timeRemaining <= 0) return;
 
         const index = selectedTickets.indexOf(number);
 
         if (index > -1) {
-            // Deselect Ticket
             selectedTickets.splice(index, 1);
             element.classList.remove('selected');
             userBalance += TICKET_PRICE;
-            activeParticipantsCount--;
         } else {
-            // Select Ticket
             if (selectedTickets.length >= MAX_SELECTIONS) {
-                alert(`ከ ${MAX_SELECTIONS} በላይ መምረጥ አይችሉም! (Maximum ${MAX_SELECTIONS} tickets allowed)`);
+                alert(`ከ ${MAX_SELECTIONS} በላይ መምረጥ አይችሉም!`);
                 return;
             }
             if (userBalance < TICKET_PRICE) {
-                alert('በቂ ባላንስ የለዎትም! (Insufficient balance!)');
+                alert('በቂ ባላንስ የለዎትም!');
                 return;
             }
 
             selectedTickets.push(number);
             element.classList.add('selected');
             userBalance -= TICKET_PRICE;
-            activeParticipantsCount++;
         }
 
         updateUI();
     }
 
-    // Calculate dynamic prize pool based on total tickets bought
+    // Generate Mock 5x5 Matrix for Ticket Card
+    function generateCardMatrix(ticketNum) {
+        const matrix = [];
+        for (let row = 0; row < 5; row++) {
+            const rowData = [];
+            for (let col = 0; col < 5; col++) {
+                if (row === 2 && col === 2) {
+                    rowData.push('★');
+                } else {
+                    const min = col * 15 + 1;
+                    const max = min + 14;
+                    const num = (ticketNum + row * 5 + col) % 15 + min;
+                    rowData.push(num);
+                }
+            }
+            matrix.push(rowData);
+        }
+        return matrix;
+    }
+
+    // Render Preview Cards Panel (Image 1)
+    function renderPreviewCards() {
+        if (selectedTickets.length === 0) {
+            ticketsPreviewPanel.classList.remove('active');
+            return;
+        }
+
+        ticketsPreviewPanel.classList.add('active');
+        previewCardsContainer.innerHTML = '';
+        panelCount.textContent = selectedTickets.length;
+        panelCost.textContent = selectedTickets.length * TICKET_PRICE;
+
+        selectedTickets.forEach(ticketNum => {
+            const card = document.createElement('div');
+            card.className = 'mini-card';
+            
+            let html = `<div class="mini-card-title">#${ticketNum}</div><div class="mini-grid">`;
+            const headers = ['B', 'I', 'N', 'G', 'O'];
+            headers.forEach(h => html += `<div class="mini-grid-header">${h}</div>`);
+
+            const matrix = generateCardMatrix(ticketNum);
+            for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 5; c++) {
+                    const val = matrix[r][c];
+                    const isStar = val === '★';
+                    html += `<div class="mini-grid-cell ${isStar ? 'star' : ''}">${val}</div>`;
+                }
+            }
+            html += `</div>`;
+            card.innerHTML = html;
+            previewCardsContainer.appendChild(card);
+        });
+    }
+
     function updatePrizePool() {
-        const grossPool = activeParticipantsCount * TICKET_PRICE;
+        const totalTickets = selectedTickets.length + 100; // Simulated extra players
+        const grossPool = totalTickets * TICKET_PRICE;
         prizePool = Math.max(0, grossPool - BOT_COMMISSION);
     }
 
-    // Update Text Elements
     function updateUI() {
         updatePrizePool();
         balanceDisplay.textContent = userBalance.toFixed(2);
         prizeDisplay.textContent = prizePool.toFixed(2);
         badgePrizeDisplay.textContent = prizePool.toFixed(2);
+        livePrizeDisplay.textContent = prizePool.toFixed(2);
         selectedCountDisplay.textContent = selectedTickets.length;
+        renderPreviewCards();
     }
 
-    // Dynamic Timer Loop
+    // Dynamic Selection Countdown Timer
     function startCountdown() {
         timerInterval = setInterval(() => {
             timeRemaining--;
-            
             const seconds = timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining;
             timerDisplay.textContent = `00:${seconds}`;
 
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
-                resolveWinner();
+                startLiveDrawStage();
             }
         }, 1000);
     }
 
-    // Winner Resolution & Reset
-    function resolveWinner() {
-        if (activeParticipantsCount === 0) {
-            alert('ምንም ተጫዋች አልተሳተፈም። (No tickets selected. Restarting game...)');
-            resetGame();
+    // --- LIVE DRAWING STAGE LOGIC (Image 2) ---
+    function startLiveDrawStage() {
+        selectionStage.style.display = 'none';
+        drawStage.classList.add('active');
+        build75Board();
+        drawnBalls = [];
+        remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
+
+        // Render My Ticket into Live Panel
+        const liveTicketContainer = document.getElementById('liveTicketPreview');
+        if (selectedTickets.length > 0) {
+            liveTicketContainer.innerHTML = `<div>#${selectedTickets[0]} Active</div>`;
+        } else {
+            liveTicketContainer.innerHTML = `<div>No Ticket</div>`;
+        }
+
+        // Start Auto Ball Draw Loop
+        drawInterval = setInterval(drawNextBall, 2000);
+    }
+
+    // Build Board (1 to 75 Grid Columns: B I N G O)
+    function build75Board() {
+        board75.innerHTML = '';
+        const letters = ['B', 'I', 'N', 'G', 'O'];
+        const classes = ['header-b', 'header-i', 'header-n', 'header-g', 'header-o'];
+        
+        headers = letters.map((l, i) => `<div class="board-header ${classes[i]}">${l}</div>`).join('');
+        board75.innerHTML += headers;
+
+        for (let row = 0; row < 15; row++) {
+            for (let col = 0; col < 5; col++) {
+                const num = col * 15 + row + 1;
+                const cell = document.createElement('div');
+                cell.className = 'board-cell';
+                cell.id = `cell-${num}`;
+                cell.textContent = num;
+                board75.appendChild(cell);
+            }
+        }
+    }
+
+    // Draw Next Random Ball
+    function drawNextBall() {
+        if (remainingBalls.length === 0 || drawnBalls.length >= 75) {
+            clearInterval(drawInterval);
+            alert('ጨዋታው ተጠናቋል! (Round Finished)');
             return;
         }
 
-        // Pick a winning ticket randomly from selected tickets
-        const winningTicket = selectedTickets[Math.floor(Math.random() * selectedTickets.length)];
-        
-        alert(`🎉 የዕጣው ቁጥር ${winningTicket} ወጥቷል! \nአሸናፊው ${prizePool.toFixed(2)} ETB ወስዷል።`);
-        
-        // Award prize pool to the balance
-        userBalance += prizePool;
-        
-        resetGame();
-    }
+        const randomIndex = Math.floor(Math.random() * remainingBalls.length);
+        const ballNum = remainingBalls.splice(randomIndex, 1)[0];
+        drawnBalls.push(ballNum);
 
-    // Reset game state for next round
-    function resetGame() {
-        selectedTickets = [];
-        activeParticipantsCount = 0;
-        timeRemaining = GAME_DURATION;
-        
-        // Clear selected classes from UI
-        const gridItems = document.querySelectorAll('.grid-item');
-        gridItems.forEach(item => item.classList.remove('selected'));
+        let letter = 'B';
+        if (ballNum > 15 && ballNum <= 30) letter = 'I';
+        else if (ballNum > 30 && ballNum <= 45) letter = 'N';
+        else if (ballNum > 45 && ballNum <= 60) letter = 'G';
+        else if (ballNum > 60) letter = 'O';
 
-        updateUI();
-        startCountdown();
+        const formattedBall = `${letter}-${ballNum}`;
+
+        // Highlight Cell on Board
+        const currentCell = document.getElementById(`cell-${ballNum}`);
+        if (currentCell) {
+            document.querySelectorAll('.board-cell').forEach(c => c.classList.remove('current-call'));
+            currentCell.classList.add('called', 'current-call');
+        }
+
+        // Update Main Ball Display
+        mainBallDisplay.textContent = formattedBall;
+
+        // Update History Bar (Last 3 Balls)
+        const recentBalls = drawnBalls.slice(-3).reverse();
+        historyBar.innerHTML = recentBalls.map(num => {
+            let l = num <= 15 ? 'B' : num <= 30 ? 'I' : num <= 45 ? 'N' : num <= 60 ? 'G' : 'O';
+            return `<div class="history-ball">${l}-${num}</div>`;
+        }).join('');
+
+        // Update Counters
+        ballsCountDisplay.textContent = `${drawnBalls.length}/75`;
     }
 
     // Initialize Game
