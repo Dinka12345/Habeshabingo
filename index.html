@@ -1200,49 +1200,49 @@
         grid.appendChild(item);
     }
 
-    // --- REAL-TIME SYNCHRONIZED COUNTDOWN SYSTEM ---
+    // --- UNIVERSAL DETERMINISTIC COUNTDOWN LOGIC ---
+    function getGlobalFixedEndTime(intervalSeconds = 30) {
+        // Calculates the next fixed universal target time bound to global epoch clock
+        const now = Math.floor(Date.now() / 1000);
+        const nextInterval = (Math.floor(now / intervalSeconds) + 1) * intervalSeconds;
+        return nextInterval * 1000;
+    }
+
     async function syncGlobalRoundTimer() {
-        if (!supabaseClient) {
-            // Local fallback timer if no database available
-            activeRoundEndTime = new Date().getTime() + 30000;
-            startSynchronizedCountdown();
-            return;
-        }
-
         try {
-            const { data, error } = await supabaseClient
-                .from('game_sessions')
-                .select('*')
-                .eq('status', 'selection')
-                .order('id', { ascending: false })
-                .limit(1)
-                .single();
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient
+                    .from('game_sessions')
+                    .select('*')
+                    .eq('status', 'selection')
+                    .order('id', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
 
-            if (data && !error) {
-                activeRoundEndTime = new Date(data.round_end_time).getTime();
-                if (data.round_number) {
-                    document.getElementById('currentRoundDisplay').textContent = `#${data.round_number}`;
+                if (data && data.round_end_time) {
+                    activeRoundEndTime = new Date(data.round_end_time).getTime();
+                    if (data.round_number) {
+                        document.getElementById('currentRoundDisplay').textContent = `#${data.round_number}`;
+                    }
+                } else {
+                    activeRoundEndTime = getGlobalFixedEndTime(30);
                 }
-                startSynchronizedCountdown();
             } else {
-                // Fallback local timer if session row missing
-                activeRoundEndTime = new Date().getTime() + 30000;
-                startSynchronizedCountdown();
+                activeRoundEndTime = getGlobalFixedEndTime(30);
             }
         } catch (err) {
-            console.error("Error fetching round timer:", err);
-            activeRoundEndTime = new Date().getTime() + 30000;
-            startSynchronizedCountdown();
+            console.error("Sync error, using UTC fallback:", err);
+            activeRoundEndTime = getGlobalFixedEndTime(30);
         }
+
+        startSynchronizedCountdown();
     }
 
     function startSynchronizedCountdown() {
         if (syncInterval) clearInterval(syncInterval);
 
         syncInterval = setInterval(() => {
-            if (!activeRoundEndTime) return;
-
-            const now = new Date().getTime();
+            const now = Date.now();
             const diffMs = activeRoundEndTime - now;
             remainingTimeSeconds = Math.max(0, Math.floor(diffMs / 1000));
 
@@ -1251,7 +1251,7 @@
             
             timerDisplay.textContent = `${minutes}:${seconds}`;
 
-            if (remainingTimeSeconds <= 0) {
+            if (diffMs <= 0) {
                 clearInterval(syncInterval);
                 timerDisplay.textContent = "00:00";
                 startLiveDrawStage();
@@ -1259,7 +1259,7 @@
         }, 1000);
     }
 
-    // Listen to Supabase Realtime updates for game state sync
+    // Real-time Supabase trigger
     if (supabaseClient) {
         supabaseClient
             .channel('public:game_sessions')
