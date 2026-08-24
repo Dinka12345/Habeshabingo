@@ -914,7 +914,7 @@
                 <div class="avatar-circle" id="walletAvatar">U</div>
                 <div class="user-details">
                     <span class="user-name" id="walletUserName">User</span>
-                    <span class="user-phone">0985674382</span>
+                    <span class="user-phone wallet-user-phone">Not linked</span>
                 </div>
             </div>
         </div>
@@ -939,7 +939,7 @@
                 <div class="avatar-circle" id="topProfileAvatar">U</div>
                 <div class="user-details">
                     <span class="user-name" id="topProfileUserName">User</span>
-                    <span class="user-phone">0985674382</span>
+                    <span class="user-phone wallet-user-phone">Not linked</span>
                 </div>
             </div>
         </div>
@@ -949,8 +949,8 @@
         <div class="profile-card">
             <div class="profile-avatar" id="profileAvatar">U</div>
             <div class="profile-name" id="profileUserName">User</div>
-            <div class="profile-phone">0985674382</div>
-            <div class="profile-user-id">ID: demo_user_123</div>
+            <div class="profile-phone" id="profilePhoneDisplay">Not linked</div>
+            <div class="profile-user-id" id="profileUserIdDisplay">ID: demo_user_123</div>
         </div>
 
         <div class="share-link-card">
@@ -1083,12 +1083,13 @@
         ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
         : null;
 
-    // Telegram Mini App User Auto-Detection
+    // Dynamic User & Contact Detection via Telegram Mini App
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
     const CURRENT_USER_ID = tgUser ? `tg_${tgUser.id}` : 'demo_user_123';
     
-    // Dynamic Name Fallback
+    // Dynamic Name & Phone Fallback
     let userRealName = tgUser ? `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() : 'User';
+    let userPhone = (tgUser && tgUser.phone_number) ? tgUser.phone_number : 'Not linked';
     
     const TICKET_PRICE = 10;
     const FIXED_COMMISSION = 10; // Fixed 10 Birr system commission
@@ -1287,7 +1288,7 @@
     async function sendTelegramAdminNotification(type, details) {
         const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
                      `👤 *User:* ${userRealName}\n` +
-                     `📞 *Phone:* 0985674382\n` +
+                     `📞 *Phone:* ${userPhone}\n` +
                      `🆔 *User ID:* ${CURRENT_USER_ID}\n` +
                      `💵 *Amount:* ${details.amount} ETB\n` +
                      `🏦 *Method:* ${details.method}\n` +
@@ -1300,8 +1301,8 @@
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: "✅ Approve", callback_data: `approve_${type}_${details.amount}_${CURRENT_USER_ID}` },
-                        { text: "❌ Reject", callback_data: `reject_${type}_${details.amount}_${CURRENT_USER_ID}` }
+                        { text: "✅ Approve", callback_data: `approve|${type}|${details.amount}|${CURRENT_USER_ID}` },
+                        { text: "❌ Reject", callback_data: `reject|${type}|${details.amount}|${CURRENT_USER_ID}` }
                     ]
                 ]
             }
@@ -1349,7 +1350,8 @@
         const messageId = callbackQuery.message.message_id;
         const chatId = callbackQuery.message.chat.id;
 
-        const parts = callbackData.split('_');
+        // Flexible delimiter parser supporting both '|' and '_'
+        const parts = callbackData.includes('|') ? callbackData.split('|') : callbackData.split('_');
         const action = parts[0];   
         const type = parts[1];     
         const amount = parseFloat(parts[2]);
@@ -1397,9 +1399,9 @@
                     .from('user_profiles')
                     .select('balance')
                     .eq('user_id', userId)
-                    .single();
+                    .maybeSingle();
 
-                if (data) {
+                if (data && data.balance !== undefined) {
                     currentBal = parseFloat(data.balance);
                 }
             } catch (err) {
@@ -1408,7 +1410,22 @@
         }
 
         let newBalance = currentBal + amountChange;
-        saveBalance(newBalance);
+        
+        if (userId === CURRENT_USER_ID) {
+            saveBalance(newBalance);
+        } else if (supabaseClient) {
+            try {
+                await supabaseClient
+                    .from('user_profiles')
+                    .upsert({ 
+                        user_id: userId, 
+                        balance: newBalance,
+                        updated_at: new Date()
+                    });
+            } catch (err) {
+                console.error('Failed to sync target user balance in Supabase:', err);
+            }
+        }
     }
 
     async function fetchUserBalanceFromSupabase() {
@@ -1416,7 +1433,7 @@
         try {
             const { data, error } = await supabaseClient
                 .from('user_profiles')
-                .select('balance, full_name')
+                .select('balance, full_name, phone_number')
                 .eq('user_id', CURRENT_USER_ID)
                 .single();
 
@@ -1428,8 +1445,10 @@
                 if (data.full_name) {
                     userRealName = data.full_name;
                 }
+                if (data.phone_number) {
+                    userPhone = data.phone_number;
+                }
             } else if (error && error.code === 'PGRST116') {
-                // User does not exist, initialize with 15 ETB
                 saveBalance(DEFAULT_INITIAL_BALANCE);
             }
             updateUserNamesUI();
@@ -1449,6 +1468,12 @@
         document.getElementById('profileUserName').textContent = userRealName;
         document.getElementById('modalAccName').textContent = userRealName;
         
+        // Dynamically update Phone Numbers in UI
+        document.querySelectorAll('.wallet-user-phone').forEach(el => el.textContent = userPhone);
+        document.getElementById('profilePhoneDisplay').textContent = userPhone;
+        document.getElementById('profileUserIdDisplay').textContent = `ID: ${CURRENT_USER_ID}`;
+        document.getElementById('shareLinkText').textContent = `t.me/bingo_habesha_bot?start=${CURRENT_USER_ID}`;
+        
         document.getElementById('walletAvatar').textContent = firstLetter;
         document.getElementById('topProfileAvatar').textContent = firstLetter;
         document.getElementById('profileAvatar').textContent = firstLetter;
@@ -1467,6 +1492,7 @@
                         user_id: CURRENT_USER_ID, 
                         balance: userBalance,
                         full_name: userRealName,
+                        phone_number: userPhone,
                         updated_at: new Date()
                     });
             } catch (err) {
