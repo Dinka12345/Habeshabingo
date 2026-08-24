@@ -1085,12 +1085,13 @@
     const CURRENT_USER_ID = 'demo_user_123';
     let userRealName = 'Abiy'; // Fallback user real name
     const TICKET_PRICE = 10;
-    const BOT_COMMISSION = 10; 
+    const FIXED_COMMISSION = 10; // Fixed 10 Birr system commission
     const MAX_SELECTIONS = 4;
     const DEFAULT_INITIAL_BALANCE = 500.00;
 
     let userBalance = parseFloat(localStorage.getItem('bingo_user_balance')) || DEFAULT_INITIAL_BALANCE;
     let selectedTickets = [];
+    let otherPlayersTicketCount = 1; // Simulated other real-time player selections
     let prizePool = 0.00;
     let syncInterval = null;
     let drawInterval = null;
@@ -1531,10 +1532,20 @@
         });
     }
 
+    // --- DYNAMIC PRIZE POOL CALCULATION ---
+    // Formula: Total Collected Pool - 10 Birr Fixed Commission
+    // Examples:
+    // 2 Tickets selected/players -> 20 Birr total - 10 Birr commission = 10 Birr winner prize
+    // 7 Tickets selected/players -> 70 Birr total - 10 Birr commission = 60 Birr winner prize
     function updatePrizePool() {
-        const totalTickets = selectedTickets.length + 100;
-        const grossPool = totalTickets * TICKET_PRICE;
-        prizePool = Math.max(0, grossPool - BOT_COMMISSION);
+        const totalCardsInGame = selectedTickets.length + otherPlayersTicketCount;
+        const grossPool = totalCardsInGame * TICKET_PRICE;
+        
+        if (totalCardsInGame > 0) {
+            prizePool = Math.max(0, grossPool - FIXED_COMMISSION);
+        } else {
+            prizePool = 0.00;
+        }
     }
 
     function updateUI() {
