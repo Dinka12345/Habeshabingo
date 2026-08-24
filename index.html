@@ -912,7 +912,7 @@
             <div class="user-info-group">
                 <div class="avatar-circle">👤</div>
                 <div class="user-details">
-                    <span class="user-name">Abiy</span>
+                    <span class="user-name" id="walletUserName">Abiy</span>
                     <span class="user-phone">0985674382</span>
                 </div>
             </div>
@@ -937,7 +937,7 @@
             <div class="user-info-group">
                 <div class="avatar-circle">👤</div>
                 <div class="user-details">
-                    <span class="user-name">Abiy</span>
+                    <span class="user-name" id="topProfileUserName">Abiy</span>
                     <span class="user-phone">0985674382</span>
                 </div>
             </div>
@@ -946,8 +946,8 @@
         <div class="wallet-title">👤 የእኔ ፕሮፋይል</div>
 
         <div class="profile-card">
-            <div class="profile-avatar">A</div>
-            <div class="profile-name">Abiy</div>
+            <div class="profile-avatar" id="profileAvatar">A</div>
+            <div class="profile-name" id="profileUserName">Abiy</div>
             <div class="profile-phone">0985674382</div>
             <div class="profile-user-id">ID: demo_user_123</div>
         </div>
@@ -1083,6 +1083,7 @@
         : null;
 
     const CURRENT_USER_ID = 'demo_user_123';
+    let userRealName = 'Abiy'; // Fallback user real name
     const TICKET_PRICE = 10;
     const BOT_COMMISSION = 10; 
     const MAX_SELECTIONS = 4;
@@ -1179,7 +1180,7 @@
     const drawStage = document.getElementById('drawStage');
     const walletStage = document.getElementById('walletStage');
     const profileStage = document.getElementById('profileStage');
-    const topBalanceBar = document.getElementById('topBalanceBar');
+    topBalanceBar = document.getElementById('topBalanceBar');
     const floatingBadge = document.getElementById('floatingBadge');
     
     const board75 = document.getElementById('board75');
@@ -1274,7 +1275,7 @@
     // --- TELEGRAM NOTIFICATION & LONG POLLING LOGIC ---
     async function sendTelegramAdminNotification(type, details) {
         const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
-                     `👤 *User:* Abiy\n` +
+                     `👤 *User:* ${userRealName}\n` +
                      `📞 *Phone:* 0985674382\n` +
                      `🆔 *User ID:* ${CURRENT_USER_ID}\n` +
                      `💵 *Amount:* ${details.amount} ETB\n` +
@@ -1404,18 +1405,31 @@
         try {
             const { data, error } = await supabaseClient
                 .from('user_profiles')
-                .select('balance')
+                .select('balance, full_name')
                 .eq('user_id', CURRENT_USER_ID)
                 .single();
 
             if (data && !error) {
-                userBalance = parseFloat(data.balance);
-                localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+                if (data.balance !== undefined) {
+                    userBalance = parseFloat(data.balance);
+                    localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+                }
+                if (data.full_name) {
+                    userRealName = data.full_name;
+                    updateUserNamesUI();
+                }
                 updateUI();
             }
         } catch (err) {
             console.warn('Could not fetch from Supabase:', err);
         }
+    }
+
+    function updateUserNamesUI() {
+        document.getElementById('walletUserName').textContent = userRealName;
+        document.getElementById('topProfileUserName').textContent = userRealName;
+        document.getElementById('profileUserName').textContent = userRealName;
+        document.getElementById('profileAvatar').textContent = userRealName.charAt(0).toUpperCase();
     }
 
     async function saveBalance(amount) {
@@ -1430,6 +1444,7 @@
                     .upsert({ 
                         user_id: CURRENT_USER_ID, 
                         balance: userBalance,
+                        full_name: userRealName,
                         updated_at: new Date()
                     });
             } catch (err) {
@@ -1723,13 +1738,16 @@
 
     async function handleWinnerPayout(winningTicket, patternName) {
         const wonAmount = prizePool;
+        const announcementText = `Winner is ${userRealName}!`;
         
         if (!isMuted && 'speechSynthesis' in window) {
-            const winUtterance = new SpeechSynthesisUtterance("Bingo! You won!");
+            window.speechSynthesis.cancel();
+            const winUtterance = new SpeechSynthesisUtterance(`Bingo! ${announcementText}`);
+            winUtterance.rate = 0.9;
             window.speechSynthesis.speak(winUtterance);
         }
 
-        alert(`🎉 BINGO! 🎉\n\nእንኳን ደስ አለዎ! ካርቴላ #${winningTicket} በ ${patternName} አሸንፏል!\nየሽልማት መጠን: ${wonAmount.toFixed(2)} ETB`);
+        alert(`🎉 BINGO! 🎉\n\n${announcementText}\n\nካርቴላ #${winningTicket} በ ${patternName} አሸንፏል!\nየሽልማት መጠን: ${wonAmount.toFixed(2)} ETB`);
 
         await saveBalance(userBalance + wonAmount);
         resetGameForNextRound();
