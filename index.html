@@ -432,6 +432,370 @@
             font-weight: bold;
         }
 
+        /* STAGE 3: WALLET VIEW */
+        .wallet-stage {
+            display: none;
+            flex-direction: column;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        .wallet-stage.active { display: flex; }
+
+        .wallet-top-user {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: #2b3d63;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #8fa2c7;
+        }
+
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: bold; font-size: 14px; }
+        .user-phone { font-size: 10px; color: #627385; }
+
+        .wallet-badge-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .wallet-mini-badge {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #111a26;
+        }
+
+        .wallet-mini-badge.play { color: #00e676; }
+        .wallet-mini-badge.main { color: #ffaa00; }
+
+        .wallet-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+
+        .balance-card {
+            background: #101926;
+            border: 1px solid #1a2838;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+        }
+
+        .bal-row { font-size: 13px; color: #a0aec0; margin-bottom: 6px; }
+        .bal-val-main { color: #ffaa00; font-weight: bold; }
+        .bal-val-play { color: #00aaff; font-weight: bold; }
+
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .wallet-btn {
+            border: none;
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-deposit { background-color: #00897b; color: #ffffff; }
+        .btn-withdraw { background-color: #e53935; color: #ffffff; }
+
+        .history-section-title {
+            font-size: 13px;
+            color: #cbd5e0;
+            margin-top: 8px;
+        }
+
+        .history-item {
+            background-color: #101926;
+            border: 1px solid #1a2838;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #00897b;
+        }
+
+        .history-item-left { display: flex; flex-direction: column; gap: 4px; }
+        .history-item-title { font-size: 12px; font-weight: bold; color: #ffffff; }
+        .history-item-status { font-size: 11px; color: #ff4d4d; font-weight: 500; }
+        .history-item-date { font-size: 10px; color: #627385; }
+        .history-item-amount { color: #00e676; font-weight: bold; font-size: 14px; }
+
+        /* STAGE 4: PROFILE VIEW */
+        .profile-stage {
+            display: none;
+            flex-direction: column;
+            padding: 16px;
+            gap: 12px;
+        }
+
+        .profile-stage.active { display: flex; }
+
+        .profile-card {
+            background: #0f1924;
+            border: 1px solid #1a2838;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #00e676;
+            color: #0d1520;
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-name { font-size: 18px; font-weight: bold; }
+        .profile-phone { font-size: 12px; color: #8a99ad; }
+        .profile-user-id { font-size: 11px; color: #00aaff; word-break: break-all; text-align: center; }
+
+        .share-link-card {
+            background: #0d1622;
+            border: 1px solid #1e2d42;
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .share-link-text { font-size: 11px; color: #00e676; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: #0f1924;
+            border: 1px solid #1a2838;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-box-title { font-size: 11px; color: #8a99ad; margin-bottom: 4px; }
+        .stat-box-val { font-size: 18px; font-weight: bold; }
+        .stat-box-val.won { color: #00e676; }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item {
+            background: #0f1924;
+            border: 1px solid #1a2838;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #3b82f6;
+            cursor: pointer;
+        }
+
+        .menu-item.promo {
+            border: 1px solid #b45309;
+            color: #f59e0b;
+        }
+
+        .menu-item-left { display: flex; align-items: center; gap: 10px; }
+
+        /* DEPOSIT MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background-color: #0f1722;
+            width: 100%;
+            max-width: 420px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            padding: 16px;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-top: 1px solid #1e2d42;
+        }
+
+        .modal-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .close-btn { color: #8a99ad; background: none; border: none; font-size: 14px; cursor: pointer; }
+        .modal-title { font-size: 16px; font-weight: bold; color: #ffffff; }
+
+        .banner-promo {
+            background: #23191c;
+            border: 1px solid #422026;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .banner-warning {
+            background: #262118;
+            border: 1px solid #4a3c1e;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 10px;
+            color: #d69e2e;
+            margin-bottom: 12px;
+        }
+
+        .payment-method-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .pm-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #1a2838;
+            background: #101926;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .pm-btn.active {
+            background: #ffffff;
+            color: #0d1520;
+            border-color: #ffffff;
+        }
+
+        .account-details-box {
+            background: #0a111a;
+            border: 1px solid #1a2838;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .acc-info { display: flex; flex-direction: column; gap: 4px; }
+        .acc-label { font-size: 10px; color: #8a99ad; }
+        .acc-name { font-size: 13px; font-weight: bold; color: #ffffff; }
+        .acc-num { font-size: 16px; font-weight: bold; color: #00aaff; }
+
+        .copy-btn {
+            background: #1a2838;
+            color: #ffffff;
+            border: 1px solid #2a3a4e;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .input-label { font-size: 12px; color: #cbd5e0; }
+
+        .form-input {
+            background: #0a111a;
+            border: 1px solid #1a2838;
+            border-radius: 6px;
+            padding: 10px;
+            color: #ffffff;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .form-input::placeholder { color: #4a5568; }
+
+        .submit-btn {
+            width: 100%;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -454,6 +818,7 @@
             color: #627385;
             font-size: 10px;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .nav-item.active { color: #ff4d4d; }
@@ -474,7 +839,7 @@
         </div>
     </header>
 
-    <div class="user-balance-bar">
+    <div class="user-balance-bar" id="topBalanceBar">
         <span>የእርስዎ ባላንስ (Balance):</span>
         <span class="user-balance-amount"><span id="userBalance">500.00</span> ETB</span>
     </div>
@@ -548,7 +913,172 @@
         </div>
     </div>
 
-    <div class="floating-badge">
+    <!-- STAGE 3: WALLET VIEW -->
+    <div id="walletStage" class="wallet-stage">
+        <div class="wallet-top-user">
+            <div class="user-info-group">
+                <div class="avatar-circle">👤</div>
+                <div class="user-details">
+                    <span class="user-name">Abiy</span>
+                    <span class="user-phone">0985674382</span>
+                </div>
+            </div>
+            <div class="wallet-badge-group">
+                <div class="wallet-mini-badge play">PLAY WALLET <span style="margin-left:8px;">5.00</span></div>
+                <div class="wallet-mini-badge main">MAIN WALLET <span style="margin-left:8px;">0.00</span></div>
+            </div>
+        </div>
+
+        <div class="wallet-title">የእኔ ሂሳብ (Wallet)</div>
+
+        <div class="balance-card">
+            <div class="bal-row">ዋና ሂሳብ <span class="bal-val-main">0.00</span></div>
+            <div class="bal-row">መጫወቻ ሂሳብ: <span class="bal-val-play"><span id="walletPlayBal">500.00</span> ETB</span></div>
+
+            <div class="action-btns">
+                <button class="wallet-btn btn-deposit" id="openDepositBtn"><span>➕</span> Deposit</button>
+                <button class="wallet-btn btn-withdraw" id="openWithdrawBtn"><span>💸</span> Withdraw</button>
+            </div>
+        </div>
+
+        <div class="history-section-title">የሂሳብ ዝውውር ታሪክ (History)</div>
+
+        <div class="history-item">
+            <div class="history-item-left">
+                <div class="history-item-title">DEPOSIT (CBEBIRR)</div>
+                <div class="history-item-status">❌ Rejected</div>
+                <div class="history-item-date">8/23/2026, 4:29:16 PM</div>
+            </div>
+            <div class="history-item-amount">+200.00 ETB</div>
+        </div>
+    </div>
+
+    <!-- STAGE 4: PROFILE VIEW -->
+    <div id="profileStage" class="profile-stage">
+        <div class="wallet-top-user" style="margin-bottom: 8px;">
+            <div class="user-info-group">
+                <div class="avatar-circle">👤</div>
+                <div class="user-details">
+                    <span class="user-name">Abiy</span>
+                    <span class="user-phone">0985674382</span>
+                </div>
+            </div>
+            <div class="wallet-badge-group">
+                <div class="wallet-mini-badge play">PLAY WALLET <span style="margin-left:8px;">5.00</span></div>
+                <div class="wallet-mini-badge main">MAIN WALLET <span style="margin-left:8px;">0.00</span></div>
+            </div>
+        </div>
+
+        <div class="wallet-title">👤 የእኔ ፕሮፋይል</div>
+
+        <div class="profile-card">
+            <div class="profile-avatar">A</div>
+            <div class="profile-name">Abiy</div>
+            <div class="profile-phone">0985674382</div>
+            <div class="profile-user-id">ID: #6a8ae35d6a931c04a3e4eba7</div>
+        </div>
+
+        <div class="share-link-card">
+            <div style="display:flex; flex-direction:column; gap:2px; overflow:hidden;">
+                <div style="font-size:10px; color:#8a99ad;">🤖 የራስዎ መጋበዣ ሊንክ (Share)</div>
+                <div class="share-link-text" id="shareLinkText">t.me/bingo_habesha_bot?start=6a8ae35d</div>
+            </div>
+            <button class="copy-btn" id="copyShareBtn">Copy</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-box-title">የተጫወቱት (Played)</div>
+                <div class="stat-box-val" style="color:#00aaff;">3</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-title">ያሸነፉት (Won)</div>
+                <div class="stat-box-val won">0.00 ETB</div>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item">
+                <div class="menu-item-left">📞 <span>እርዳታ ያስፈልጎታል?</span></div>
+                <span>&gt;</span>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-left">📖 <span>የጨዋታው መመሪያ እና ደንብ</span></div>
+                <span>&gt;</span>
+            </div>
+            <div class="menu-item promo">
+                <div class="menu-item-left">🎟️ <span>ፕሮሞ ኮድ (Promo Code)</span></div>
+                <span>&gt;</span>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-left">🔐 <span>የይለፍ ቃል ቀይር</span></div>
+                <span>&gt;</span>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-left">🚪 <span>ከሰሲተም ውጣ</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPOSIT MODAL -->
+    <div class="modal-overlay" id="depositModal">
+        <div class="modal-card">
+            <div class="modal-top-bar">
+                <button class="close-btn" id="closeDepositBtn">Close</button>
+                <div class="modal-title">Deposit Funds</div>
+                <div style="width: 30px;"></div>
+            </div>
+
+            <div class="banner-promo">
+                <span style="font-size: 18px;">🔥</span>
+                <div>
+                    <div style="font-weight: bold; color: #fff;">ልዩ ስጦታ</div>
+                    <div style="color: #cbd5e0; font-size: 11px;">ከ 100 ብር ጀምሮ ገቢ ሲያደርጉ ተጨማሪ 20% ጉርሻ ያግኙ!</div>
+                </div>
+            </div>
+
+            <div class="banner-warning">
+                ⚠️ <strong>ማሳሰቢያ:</strong> ገንዘብ ገቢ ማድረግ የሚቻለው ከቴሌብር ወደ ቴሌብር እንዲሁም ከሲቢኤ ወደ ሲቢኤ ብቻ ነው።
+            </div>
+
+            <div style="font-size: 12px; margin-bottom: 6px; font-weight: bold;">ባንክ ይምረጡ</div>
+            <div class="payment-method-toggle">
+                <button class="pm-btn active" id="btnTelebirr">
+                    <span style="color: #00aaff;">t</span> TeleBirr
+                </button>
+                <button class="pm-btn" id="btnCbebirr">
+                    <span style="color: #e91e63;">CBE</span> CBE Birr
+                </button>
+            </div>
+
+            <div class="account-details-box">
+                <div class="acc-info">
+                    <span class="acc-label">Account Name:</span>
+                    <span class="acc-name">Abiy zeleke</span>
+                    <span class="acc-num" id="displayAccNumber">0937584000</span>
+                </div>
+                <button class="copy-btn" id="copyAccBtn">Copy</button>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">መጠን (ብር)</label>
+                <input type="number" id="depositAmountInput" class="form-input" placeholder="Min: 50 ETB | Max: 100,000 ETB">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">የከፈሉበት ማረጋገጫ (SMS)</label>
+                <textarea id="depositSmsInput" class="form-input" rows="3" placeholder="ከባንክ የተላከላችሁን SMS ሙሉውን እዚህ Paste ያድርጉ (ትክክለኛ የከፈሉበት ደረሰኝ)"></textarea>
+            </div>
+
+            <div style="font-size: 10px; color: #d69e2e; margin-bottom: 12px;">
+                💡 <strong>ማሳሰቢያ:</strong> ከባንክ የተላከላችሁን SMS <strong>ሙሉውን</strong> ኮፒ በማድረግ እዚህ ይለጥፉ። በተለይ በ <strong>CBE Birr</strong> ሲከፍሉ የባንክ ሙሉ ደረሰኝ (SMS) ማካተትዎን አይርሱ።
+            </div>
+
+            <button class="submit-btn" id="submitDepositBtn">ላክ</button>
+        </div>
+    </div>
+
+    <div class="floating-badge" id="floatingBadge">
         <div class="live-tag">LIVE</div>
         <div class="badge-sub">ደራሽ</div>
         <div class="badge-value" id="badgePrizePool">0.00</div>
@@ -556,15 +1086,50 @@
     </div>
 
     <nav class="bottom-nav">
-        <a href="#" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
-        <a href="#" class="nav-item active"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
-        <a href="#" class="nav-item"><span class="nav-icon">💰</span><span>Wallet</span></a>
-        <a href="#" class="nav-item"><span class="nav-icon">🏆</span><span>Rank</span></a>
-        <a href="#" class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+        <a class="nav-item" id="navTicket"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
+        <a class="nav-item" id="navWallet"><span class="nav-icon">💰</span><span>Wallet</span></a>
+        <a class="nav-item"><span class="nav-icon">🏆</span><span>Rank</span></a>
+        <a class="nav-item active" id="navProfile"><span class="nav-icon">👤</span><span>Profile</span></a>
     </nav>
 </div>
 
 <script>
+    // --- TELEGRAM BOT CONFIGURATION ---
+    const TELEGRAM_ADMIN_ID = "8216936710";
+    // Replace with your Bot Token from @BotFather
+    const TELEGRAM_BOT_TOKEN = "8712991515:AAFTi-eDgZWn30llYXyPFZnKDx60KkKlWRo"; 
+
+    // Send Telegram Notification Function
+    async function sendTelegramAdminNotification(type, details) {
+        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN") {
+            console.log("Telegram Bot Token is missing. Notification text:", details);
+            return;
+        }
+
+        const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
+                     `👤 *User:* Abiy\n` +
+                     `📞 *Phone:* 0985674382\n` +
+                     `🆔 *User ID:* #6a8ae35d6a931c04a3e4eba7\n` +
+                     `💵 *Amount:* ${details.amount} ETB\n` +
+                     `🏦 *Method:* ${details.method}\n` +
+                     `📄 *SMS/Proof:* \n${details.sms}\n\n` +
+                     `Please approve or reject in the admin panel.`;
+
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_ADMIN_ID,
+                    text: text,
+                    parse_mode: "Markdown"
+                })
+            });
+        } catch (err) {
+            console.error("Failed to send notification to Telegram Admin:", err);
+        }
+    }
+
     // --- SUPABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://ntgzhyvxtociwcnhntje.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50Z3poeXZ4dG9jaXdjbmhudGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTM4ODMsImV4cCI6MjEwMzA2OTg4M30.83YzZ61MtfV2C6ikPV7eWp8ywvC-XUBasbfRF4NBkBI';
@@ -574,9 +1139,7 @@
         ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
         : null;
 
-    // Default User Setup
     const CURRENT_USER_ID = 'demo_user_123';
-
     const TICKET_PRICE = 10;
     const BOT_COMMISSION = 10; 
     const MAX_SELECTIONS = 4;
@@ -589,6 +1152,7 @@
     let timeRemaining = GAME_DURATION;
     let timerInterval = null;
     let drawInterval = null;
+    let selectedPaymentMethod = 'TeleBirr';
 
     let drawnBalls = [];
     let remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
@@ -607,6 +1171,11 @@
 
     const selectionStage = document.getElementById('selectionStage');
     const drawStage = document.getElementById('drawStage');
+    const walletStage = document.getElementById('walletStage');
+    const profileStage = document.getElementById('profileStage');
+    const topBalanceBar = document.getElementById('topBalanceBar');
+    const floatingBadge = document.getElementById('floatingBadge');
+    
     const board75 = document.getElementById('board75');
     const mainBallDisplay = document.getElementById('mainBallDisplay');
     const historyBar = document.getElementById('historyBar');
@@ -628,7 +1197,6 @@
         grid.appendChild(item);
     }
 
-    // Load initial balance from Supabase if connected
     async function fetchUserBalanceFromSupabase() {
         if (!supabaseClient) return;
         try {
@@ -644,11 +1212,10 @@
                 updateUI();
             }
         } catch (err) {
-            console.warn('Could not fetch from Supabase, using local fallback:', err);
+            console.warn('Could not fetch from Supabase:', err);
         }
     }
 
-    // Save Balance Function (Syncs to LocalStorage and Supabase)
     async function saveBalance(amount) {
         userBalance = amount;
         localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
@@ -665,23 +1232,6 @@
             } catch (err) {
                 console.error('Failed to sync balance with Supabase:', err);
             }
-        }
-    }
-
-    // Sync Game Round to Supabase
-    async function syncGameRoundToSupabase(tickets, prize) {
-        if (!supabaseClient) return;
-        try {
-            await supabaseClient
-                .from('game_rounds')
-                .insert([{
-                    user_id: CURRENT_USER_ID,
-                    tickets_bought: tickets,
-                    total_prize: prize,
-                    created_at: new Date()
-                }]);
-        } catch (err) {
-            console.error('Failed to save round to Supabase:', err);
         }
     }
 
@@ -772,6 +1322,7 @@
     function updateUI() {
         updatePrizePool();
         balanceDisplay.textContent = userBalance.toFixed(2);
+        document.getElementById('walletPlayBal').textContent = userBalance.toFixed(2);
         prizeDisplay.textContent = prizePool.toFixed(2);
         badgePrizeDisplay.textContent = prizePool.toFixed(2);
         livePrizeDisplay.textContent = prizePool.toFixed(2);
@@ -794,13 +1345,14 @@
 
     function startLiveDrawStage() {
         selectionStage.style.display = 'none';
+        walletStage.classList.remove('active');
+        profileStage.classList.remove('active');
         drawStage.classList.add('active');
         build75Board();
         drawnBalls = [];
         remainingBalls = Array.from({length: 75}, (_, i) => i + 1);
 
         renderLiveTicket();
-        syncGameRoundToSupabase(selectedTickets, prizePool);
         drawInterval = setInterval(drawNextBall, 2000);
     }
 
@@ -898,6 +1450,134 @@
 
         ballsCountDisplay.textContent = `${drawnBalls.length}/75`;
     }
+
+    // Navigation Switches
+    const navTicket = document.getElementById('navTicket');
+    const navWallet = document.getElementById('navWallet');
+    const navProfile = document.getElementById('navProfile');
+
+    function resetActiveNav() {
+        navTicket.classList.remove('active');
+        navWallet.classList.remove('active');
+        navProfile.classList.remove('active');
+    }
+
+    navTicket.addEventListener('click', () => {
+        resetActiveNav();
+        navTicket.classList.add('active');
+        walletStage.classList.remove('active');
+        profileStage.classList.remove('active');
+        topBalanceBar.style.display = 'flex';
+        floatingBadge.style.display = 'flex';
+        selectionStage.style.display = 'block';
+    });
+
+    navWallet.addEventListener('click', () => {
+        resetActiveNav();
+        navWallet.classList.add('active');
+        selectionStage.style.display = 'none';
+        drawStage.classList.remove('active');
+        profileStage.classList.remove('active');
+        topBalanceBar.style.display = 'none';
+        floatingBadge.style.display = 'none';
+        walletStage.classList.add('active');
+    });
+
+    navProfile.addEventListener('click', () => {
+        resetActiveNav();
+        navProfile.classList.add('active');
+        selectionStage.style.display = 'none';
+        drawStage.classList.remove('active');
+        walletStage.classList.remove('active');
+        topBalanceBar.style.display = 'none';
+        floatingBadge.style.display = 'none';
+        profileStage.classList.add('active');
+    });
+
+    // Modal Interaction
+    const depositModal = document.getElementById('depositModal');
+    const openDepositBtn = document.getElementById('openDepositBtn');
+    const closeDepositBtn = document.getElementById('closeDepositBtn');
+    const btnTelebirr = document.getElementById('btnTelebirr');
+    const btnCbebirr = document.getElementById('btnCbebirr');
+    const displayAccNumber = document.getElementById('displayAccNumber');
+    const copyAccBtn = document.getElementById('copyAccBtn');
+    const submitDepositBtn = document.getElementById('submitDepositBtn');
+    const depositAmountInput = document.getElementById('depositAmountInput');
+    const depositSmsInput = document.getElementById('depositSmsInput');
+
+    openDepositBtn.addEventListener('click', () => {
+        depositModal.classList.add('active');
+    });
+
+    closeDepositBtn.addEventListener('click', () => {
+        depositModal.classList.remove('active');
+    });
+
+    btnTelebirr.addEventListener('click', () => {
+        btnTelebirr.classList.add('active');
+        btnCbebirr.classList.remove('active');
+        selectedPaymentMethod = 'TeleBirr';
+        displayAccNumber.textContent = '0937584000';
+    });
+
+    btnCbebirr.addEventListener('click', () => {
+        btnCbebirr.classList.add('active');
+        btnTelebirr.classList.remove('active');
+        selectedPaymentMethod = 'CBE Birr';
+        displayAccNumber.textContent = '0937584000';
+    });
+
+    copyAccBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(displayAccNumber.textContent);
+        alert('የሂሳብ ቁጥር ተቀድቷል: ' + displayAccNumber.textContent);
+    });
+
+    document.getElementById('copyShareBtn').addEventListener('click', () => {
+        const link = document.getElementById('shareLinkText').textContent;
+        navigator.clipboard.writeText(link);
+        alert('መጋበዣ ሊንክ ተቀድቷል: ' + link);
+    });
+
+    submitDepositBtn.addEventListener('click', async () => {
+        const amount = depositAmountInput.value.trim();
+        const sms = depositSmsInput.value.trim();
+
+        if (!amount || amount <= 0) {
+            alert('እባክዎን ትክክለኛ የብር መጠን ያስገቡ!');
+            return;
+        }
+
+        if (!sms) {
+            alert('እባክዎን የባንክ SMS ማስረጃ ያስገቡ!');
+            return;
+        }
+
+        // Send Notification to Telegram Admin ID 8216936710
+        await sendTelegramAdminNotification('deposit', {
+            amount: amount,
+            method: selectedPaymentMethod,
+            sms: sms
+        });
+
+        alert('የDeposit ጥያቄዎ ለአድሚን ተልኳል! አድሚኑ ከተመለከተው በኋላ ይጸድቃል።');
+        depositModal.classList.remove('active');
+        depositAmountInput.value = '';
+        depositSmsInput.value = '';
+    });
+
+    // Withdraw action handler
+    document.getElementById('openWithdrawBtn').addEventListener('click', () => {
+        const amount = prompt("የሚወጡበትን መጠን ብር ያስገቡ (ETB):");
+        if (amount && amount > 0) {
+            sendTelegramAdminNotification('withdraw', {
+                amount: amount,
+                method: 'User Request',
+                sms: 'Withdrawal requested from in-app balance.'
+            });
+            alert('የWithdrawal ጥያቄዎ ለአድሚን ተልኳል!');
+        }
+    });
 
     // Initialize App
     fetchUserBalanceFromSupabase();
