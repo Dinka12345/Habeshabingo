@@ -490,6 +490,7 @@
             justify-content: center;
             font-size: 20px;
             color: #8fa2c7;
+            font-weight: bold;
         }
 
         .user-details { display: flex; flex-direction: column; }
@@ -834,7 +835,7 @@
 
     <div class="user-balance-bar" id="topBalanceBar">
         <span>የእርስዎ ባላንስ (Balance):</span>
-        <span class="user-balance-amount"><span id="userBalance">500.00</span> ETB</span>
+        <span class="user-balance-amount"><span id="userBalance">15.00</span> ETB</span>
     </div>
 
     <!-- STAGE 1: SELECTION VIEW -->
@@ -910,9 +911,9 @@
     <div id="walletStage" class="wallet-stage">
         <div class="wallet-top-user">
             <div class="user-info-group">
-                <div class="avatar-circle">👤</div>
+                <div class="avatar-circle" id="walletAvatar">U</div>
                 <div class="user-details">
-                    <span class="user-name" id="walletUserName">Abiy</span>
+                    <span class="user-name" id="walletUserName">User</span>
                     <span class="user-phone">0985674382</span>
                 </div>
             </div>
@@ -922,7 +923,7 @@
 
         <div class="balance-card">
             <div class="bal-row">የአሁኑ ሂሳብዎ:</div>
-            <div class="bal-val-play"><span id="walletPlayBal">500.00</span> ETB</div>
+            <div class="bal-val-play"><span id="walletPlayBal">15.00</span> ETB</div>
 
             <div class="action-btns">
                 <button class="wallet-btn btn-deposit" id="openDepositBtn"><span>➕</span> Deposit</button>
@@ -935,9 +936,9 @@
     <div id="profileStage" class="profile-stage">
         <div class="wallet-top-user" style="margin-bottom: 8px;">
             <div class="user-info-group">
-                <div class="avatar-circle">👤</div>
+                <div class="avatar-circle" id="topProfileAvatar">U</div>
                 <div class="user-details">
-                    <span class="user-name" id="topProfileUserName">Abiy</span>
+                    <span class="user-name" id="topProfileUserName">User</span>
                     <span class="user-phone">0985674382</span>
                 </div>
             </div>
@@ -946,8 +947,8 @@
         <div class="wallet-title">👤 የእኔ ፕሮፋይል</div>
 
         <div class="profile-card">
-            <div class="profile-avatar" id="profileAvatar">A</div>
-            <div class="profile-name" id="profileUserName">Abiy</div>
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <div class="profile-name" id="profileUserName">User</div>
             <div class="profile-phone">0985674382</div>
             <div class="profile-user-id">ID: demo_user_123</div>
         </div>
@@ -1028,7 +1029,7 @@
             <div class="account-details-box">
                 <div class="acc-info">
                     <span class="acc-label">Account Name:</span>
-                    <span class="acc-name">Abiy zeleke</span>
+                    <span class="acc-name" id="modalAccName">User</span>
                     <span class="acc-num" id="displayAccNumber">0937584000</span>
                 </div>
                 <button class="copy-btn" id="copyAccBtn">Copy</button>
@@ -1082,14 +1083,23 @@
         ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
         : null;
 
-    const CURRENT_USER_ID = 'demo_user_123';
-    let userRealName = 'Abiy'; // Fallback user real name
+    // Telegram Mini App User Auto-Detection
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const CURRENT_USER_ID = tgUser ? `tg_${tgUser.id}` : 'demo_user_123';
+    
+    // Dynamic Name Fallback
+    let userRealName = tgUser ? `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() : 'User';
+    
     const TICKET_PRICE = 10;
     const FIXED_COMMISSION = 10; // Fixed 10 Birr system commission
     const MAX_SELECTIONS = 4;
-    const DEFAULT_INITIAL_BALANCE = 500.00;
+    const DEFAULT_INITIAL_BALANCE = 15.00; // Fixed 15 Birr initial balance for new users
 
-    let userBalance = parseFloat(localStorage.getItem('bingo_user_balance')) || DEFAULT_INITIAL_BALANCE;
+    let userBalance = parseFloat(localStorage.getItem('bingo_user_balance'));
+    if (isNaN(userBalance)) {
+        userBalance = DEFAULT_INITIAL_BALANCE;
+    }
+
     let selectedTickets = [];
     let otherPlayersTicketCount = 1; // Simulated other real-time player selections
     let prizePool = 0.00;
@@ -1181,7 +1191,7 @@
     const drawStage = document.getElementById('drawStage');
     const walletStage = document.getElementById('walletStage');
     const profileStage = document.getElementById('profileStage');
-    topBalanceBar = document.getElementById('topBalanceBar');
+    const topBalanceBar = document.getElementById('topBalanceBar');
     const floatingBadge = document.getElementById('floatingBadge');
     
     const board75 = document.getElementById('board75');
@@ -1411,26 +1421,37 @@
                 .single();
 
             if (data && !error) {
-                if (data.balance !== undefined) {
+                if (data.balance !== undefined && data.balance !== null) {
                     userBalance = parseFloat(data.balance);
                     localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
                 }
                 if (data.full_name) {
                     userRealName = data.full_name;
-                    updateUserNamesUI();
                 }
-                updateUI();
+            } else if (error && error.code === 'PGRST116') {
+                // User does not exist, initialize with 15 ETB
+                saveBalance(DEFAULT_INITIAL_BALANCE);
             }
+            updateUserNamesUI();
+            updateUI();
         } catch (err) {
             console.warn('Could not fetch from Supabase:', err);
+            updateUserNamesUI();
+            updateUI();
         }
     }
 
     function updateUserNamesUI() {
+        const firstLetter = userRealName ? userRealName.charAt(0).toUpperCase() : 'U';
+
         document.getElementById('walletUserName').textContent = userRealName;
         document.getElementById('topProfileUserName').textContent = userRealName;
         document.getElementById('profileUserName').textContent = userRealName;
-        document.getElementById('profileAvatar').textContent = userRealName.charAt(0).toUpperCase();
+        document.getElementById('modalAccName').textContent = userRealName;
+        
+        document.getElementById('walletAvatar').textContent = firstLetter;
+        document.getElementById('topProfileAvatar').textContent = firstLetter;
+        document.getElementById('profileAvatar').textContent = firstLetter;
     }
 
     async function saveBalance(amount) {
@@ -1533,10 +1554,6 @@
     }
 
     // --- DYNAMIC PRIZE POOL CALCULATION ---
-    // Formula: Total Collected Pool - 10 Birr Fixed Commission
-    // Examples:
-    // 2 Tickets selected/players -> 20 Birr total - 10 Birr commission = 10 Birr winner prize
-    // 7 Tickets selected/players -> 70 Birr total - 10 Birr commission = 60 Birr winner prize
     function updatePrizePool() {
         const totalCardsInGame = selectedTickets.length + otherPlayersTicketCount;
         const grossPool = totalCardsInGame * TICKET_PRICE;
@@ -1609,7 +1626,7 @@
         }
         if (diag2Complete) return { won: true, pattern: 'Diagonal Line' };
 
-        // 5. 4 Corners (Row 0/Col 0, Row 0/Col 4, Row 4/Col 0, Row 4/Col 4)
+        // 5. 4 Corners
         const corners = [matrix[0][0], matrix[0][4], matrix[4][0], matrix[4][4]];
         const cornersComplete = corners.every(val => val === '★' || calledNumbers.includes(val));
         if (cornersComplete) return { won: true, pattern: '4 Corners' };
@@ -1917,6 +1934,7 @@
     });
 
     // Initialize App
+    updateUserNamesUI();
     fetchUserBalanceFromSupabase();
     updateUI();
     syncGlobalRoundTimer();
