@@ -920,13 +920,13 @@
             <div class="profile-avatar">A</div>
             <div class="profile-name">Abiy</div>
             <div class="profile-phone">0985674382</div>
-            <div class="profile-user-id">ID: #6a8ae35d6a931c04a3e4eba7</div>
+            <div class="profile-user-id">ID: demo_user_123</div>
         </div>
 
         <div class="share-link-card">
             <div style="display:flex; flex-direction:column; gap:2px; overflow:hidden;">
                 <div style="font-size:10px; color:#8a99ad;">🤖 የራስዎ መጋበዣ ሊንክ (Share)</div>
-                <div class="share-link-text" id="shareLinkText">t.me/bingo_habesha_bot?start=6a8ae35d</div>
+                <div class="share-link-text" id="shareLinkText">t.me/bingo_habesha_bot?start=demo_user_123</div>
             </div>
             <button class="copy-btn" id="copyShareBtn">Copy</button>
         </div>
@@ -1030,7 +1030,7 @@
         <div class="badge-sub">ETB</div>
     </div>
 
-    <!-- CLEAR VISIBLE BOTTOM NAVIGATION MENU -->
+    <!-- PROMINENT BOTTOM NAVIGATION MENU -->
     <nav class="bottom-nav">
         <a class="nav-item active" id="navTicket"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
         <a class="nav-item" id="navWallet"><span class="nav-icon">💰</span><span>Wallet</span></a>
@@ -1043,51 +1043,12 @@
     // --- TELEGRAM BOT CONFIGURATION ---
     const TELEGRAM_ADMIN_ID = "8216936710";
     const TELEGRAM_BOT_TOKEN = "8712991515:AAFTi-eDgZWn30llYXyPFZnKDx60KkKlWRo"; 
-
-    // Send Telegram Notification Function with Interactive Inline Buttons
-    async function sendTelegramAdminNotification(type, details) {
-        const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
-                     `👤 *User:* Abiy\n` +
-                     `📞 *Phone:* 0985674382\n` +
-                     `🆔 *User ID:* #6a8ae35d6a931c04a3e4eba7\n` +
-                     `💵 *Amount:* ${details.amount} ETB\n` +
-                     `🏦 *Method:* ${details.method}\n` +
-                     `📄 *SMS/Proof:* \n${details.sms}`;
-
-        const payload = {
-            chat_id: TELEGRAM_ADMIN_ID,
-            text: text,
-            parse_mode: "Markdown",
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Approve", callback_data: `approve_${type}_${details.amount}` },
-                        { text: "❌ Reject", callback_data: `reject_${type}_${details.amount}` }
-                    ]
-                ]
-            }
-        };
-
-        try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if (!data.ok) {
-                console.error("Telegram API Error:", data);
-            }
-        } catch (err) {
-            console.error("Failed to send notification to Telegram Admin:", err);
-        }
-    }
+    let lastUpdateId = 0;
 
     // --- SUPABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://ntgzhyvxtociwcnhntje.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50Z3poeXZ4dG9jaXdjbmhudGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTM4ODMsImV4cCI6MjEwMzA2OTg4M30.83YzZ61MtfV2C6ikPV7eWp8ywvC-XUBasbfRF4NBkBI';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50Z3poeXZ4dG9jaXdjbmhudGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTM4ODMsImV4cCI6MjE0MzA2OTg4M30.83YzZ61MtfV2C6ikPV7eWp8ywvC-XUBasbfRF4NBkBI';
     
-    // Initialize Supabase Client
     const supabaseClient = (typeof supabase !== 'undefined')
         ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
         : null;
@@ -1150,6 +1111,136 @@
         grid.appendChild(item);
     }
 
+    // --- TELEGRAM NOTIFICATION & LONG POLLING LOGIC ---
+    async function sendTelegramAdminNotification(type, details) {
+        const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
+                     `👤 *User:* Abiy\n` +
+                     `📞 *Phone:* 0985674382\n` +
+                     `🆔 *User ID:* ${CURRENT_USER_ID}\n` +
+                     `💵 *Amount:* ${details.amount} ETB\n` +
+                     `🏦 *Method:* ${details.method}\n` +
+                     `📄 *SMS/Proof:* \n${details.sms}`;
+
+        const payload = {
+            chat_id: TELEGRAM_ADMIN_ID,
+            text: text,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: "✅ Approve", callback_data: `approve_${type}_${details.amount}_${CURRENT_USER_ID}` },
+                        { text: "❌ Reject", callback_data: `reject_${type}_${details.amount}_${CURRENT_USER_ID}` }
+                    ]
+                ]
+            }
+        };
+
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (!data.ok) {
+                console.error("Telegram API Error:", data);
+            }
+        } catch (err) {
+            console.error("Failed to send notification to Telegram Admin:", err);
+        }
+    }
+
+    async function pollTelegramUpdates() {
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=10`);
+            const data = await response.json();
+
+            if (data.ok && data.result.length > 0) {
+                for (const update of data.result) {
+                    lastUpdateId = update.update_id;
+
+                    if (update.callback_query) {
+                        await handleAdminCallback(update.callback_query);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Error polling Telegram updates:", err);
+        } finally {
+            setTimeout(pollTelegramUpdates, 2000);
+        }
+    }
+
+    async function handleAdminCallback(callbackQuery) {
+        const callbackData = callbackQuery.data; 
+        const queryId = callbackQuery.id;
+        const messageId = callbackQuery.message.message_id;
+        const chatId = callbackQuery.message.chat.id;
+
+        const parts = callbackData.split('_');
+        const action = parts[0];   
+        const type = parts[1];     
+        const amount = parseFloat(parts[2]);
+        const userId = parts[3];
+
+        let alertMessage = "";
+
+        if (action === "approve") {
+            const changeAmount = (type === "deposit") ? amount : -amount;
+            await adjustUserBalanceInSupabase(userId, changeAmount);
+            alertMessage = `✅ Approved ${type} of ${amount} ETB. Balance updated!`;
+        } else {
+            alertMessage = `❌ Rejected ${type} request of ${amount} ETB.`;
+        }
+
+        // Notify admin in Telegram popup
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ callback_query_id: queryId, text: alertMessage, show_alert: true })
+        });
+
+        // Edit Telegram message to reflect decision
+        const updatedText = callbackQuery.message.text + `\n\n📌 *STATUS:* ${action === 'approve' ? '✅ APPROVED' : '❌ REJECTED'}`;
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: chatId,
+                message_id: messageId,
+                text: updatedText,
+                parse_mode: "Markdown"
+            })
+        });
+
+        if (userId === CURRENT_USER_ID) {
+            fetchUserBalanceFromSupabase();
+        }
+    }
+
+    async function adjustUserBalanceInSupabase(userId, amountChange) {
+        let currentBal = userBalance;
+
+        if (supabaseClient) {
+            try {
+                const { data } = await supabaseClient
+                    .from('user_profiles')
+                    .select('balance')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (data) {
+                    currentBal = parseFloat(data.balance);
+                }
+            } catch (err) {
+                console.warn('Could not read user profile from Supabase:', err);
+            }
+        }
+
+        let newBalance = currentBal + amountChange;
+        saveBalance(newBalance);
+    }
+
     async function fetchUserBalanceFromSupabase() {
         if (!supabaseClient) return;
         try {
@@ -1172,6 +1263,7 @@
     async function saveBalance(amount) {
         userBalance = amount;
         localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+        updateUI();
 
         if (supabaseClient) {
             try {
@@ -1538,10 +1630,11 @@
         }
     });
 
-    // Initialize App
+    // Initialize App & Start Polling
     fetchUserBalanceFromSupabase();
     updateUI();
     startCountdown();
+    pollTelegramUpdates();
 </script>
 
 </body>
