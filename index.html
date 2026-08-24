@@ -1102,7 +1102,7 @@
     }
 
     let selectedTickets = [];
-    let otherPlayersTicketCount = 1; // Simulated other real-time player selections
+    let otherPlayersTicketCount = 1; 
     let prizePool = 0.00;
     let syncInterval = null;
     let drawInterval = null;
@@ -1113,7 +1113,7 @@
 
     // --- AUDIO / VOICE SYSTEM ---
     let isMuted = localStorage.getItem('bingo_audio_muted') === 'true';
-    let currentLanguage = 'am'; // 'am' for Amharic phonetics, 'en' for English
+    let currentLanguage = 'am';
     const audioToggleBtn = document.getElementById('audioToggleBtn');
     const langAmBtn = document.getElementById('langAmBtn');
     const langEnBtn = document.getElementById('langEnBtn');
@@ -1274,12 +1274,28 @@
         }, 1000);
     }
 
-    // Real-time Supabase trigger
+    // Real-time Supabase triggers for Sessions and Live Balance
     if (supabaseClient) {
         supabaseClient
             .channel('public:game_sessions')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'game_sessions' }, (payload) => {
                 syncGlobalRoundTimer();
+            })
+            .subscribe();
+
+        supabaseClient
+            .channel('public:user_profiles')
+            .on('postgres_changes', { 
+                event: 'UPDATE', 
+                schema: 'public', 
+                table: 'user_profiles',
+                filter: `user_id=eq.${CURRENT_USER_ID}`
+            }, (payload) => {
+                if (payload.new && payload.new.balance !== undefined) {
+                    userBalance = parseFloat(payload.new.balance);
+                    localStorage.setItem('bingo_user_balance', userBalance.toFixed(2));
+                    updateUI();
+                }
             })
             .subscribe();
     }
@@ -1325,7 +1341,7 @@
 
     async function pollTelegramUpdates() {
         try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=10`);
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=5`);
             const data = await response.json();
 
             if (data.ok && data.result.length > 0) {
@@ -1350,30 +1366,32 @@
         const messageId = callbackQuery.message.message_id;
         const chatId = callbackQuery.message.chat.id;
 
-        // Flexible delimiter parser supporting both '|' and '_'
+        // Parse action parameters cleanly
         const parts = callbackData.includes('|') ? callbackData.split('|') : callbackData.split('_');
-        const action = parts[0];   
-        const type = parts[1];     
+        const action = parts[0];   // approve / reject
+        const type = parts[1];     // deposit / withdraw
         const amount = parseFloat(parts[2]);
-        const userId = parts[3];
+        const targetUserId = parts[3];
 
         let alertMessage = "";
 
         if (action === "approve") {
             const changeAmount = (type === "deposit") ? amount : -amount;
-            await adjustUserBalanceInSupabase(userId, changeAmount);
-            alertMessage = `✅ Approved ${type} of ${amount} ETB. Balance updated!`;
+            await adjustUserBalanceInSupabase(targetUserId, changeAmount);
+            alertMessage = `✅ Approved ${type} of ${amount} ETB! Balance updated automatically.`;
         } else {
             alertMessage = `❌ Rejected ${type} request of ${amount} ETB.`;
         }
 
+        // Answer callback query to dismiss loading state on Telegram
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ callback_query_id: queryId, text: alertMessage, show_alert: true })
         });
 
-        const updatedText = callbackQuery.message.text + `\n\n📌 *STATUS:* ${action === 'approve' ? '✅ APPROVED' : '❌ REJECTED'}`;
+        // Edit Telegram Admin Message to remove action buttons and display resolution
+        const updatedText = callbackQuery.message.text + `\n\n📌 *STATUS:* ${action === 'approve' ? '✅ APPROVED & BALANCED' : '❌ REJECTED'}`;
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1385,16 +1403,17 @@
             })
         });
 
-        if (userId === CURRENT_USER_ID) {
+        if (targetUserId === CURRENT_USER_ID) {
             fetchUserBalanceFromSupabase();
         }
     }
 
     async function adjustUserBalanceInSupabase(userId, amountChange) {
-        let currentBal = userBalance;
+        let currentBal = 0;
 
         if (supabaseClient) {
             try {
+                // Fetch current user row directly
                 const { data } = await supabaseClient
                     .from('user_profiles')
                     .select('balance')
@@ -1403,18 +1422,13 @@
 
                 if (data && data.balance !== undefined) {
                     currentBal = parseFloat(data.balance);
+                } else {
+                    currentBal = (userId === CURRENT_USER_ID) ? userBalance : DEFAULT_INITIAL_BALANCE;
                 }
-            } catch (err) {
-                console.warn('Could not read user profile from Supabase:', err);
-            }
-        }
 
-        let newBalance = currentBal + amountChange;
-        
-        if (userId === CURRENT_USER_ID) {
-            saveBalance(newBalance);
-        } else if (supabaseClient) {
-            try {
+                const newBalance = currentBal + amountChange;
+
+                // Sync modified balance to Supabase
                 await supabaseClient
                     .from('user_profiles')
                     .upsert({ 
@@ -1422,9 +1436,15 @@
                         balance: newBalance,
                         updated_at: new Date()
                     });
+
+                if (userId === CURRENT_USER_ID) {
+                    saveBalance(newBalance);
+                }
             } catch (err) {
-                console.error('Failed to sync target user balance in Supabase:', err);
+                console.error('Failed to update target user balance in Supabase:', err);
             }
+        } else if (userId === CURRENT_USER_ID) {
+            saveBalance(userBalance + amountChange);
         }
     }
 
@@ -1468,7 +1488,6 @@
         document.getElementById('profileUserName').textContent = userRealName;
         document.getElementById('modalAccName').textContent = userRealName;
         
-        // Dynamically update Phone Numbers in UI
         document.querySelectorAll('.wallet-user-phone').forEach(el => el.textContent = userPhone);
         document.getElementById('profilePhoneDisplay').textContent = userPhone;
         document.getElementById('profileUserIdDisplay').textContent = `ID: ${CURRENT_USER_ID}`;
@@ -1630,7 +1649,7 @@
             if (isColComplete) return { won: true, pattern: 'Vertical Line' };
         }
 
-        // 3. Main Diagonal (Top-Left to Bottom-Right)
+        // 3. Main Diagonal
         let diag1Complete = true;
         for (let i = 0; i < 5; i++) {
             const val = matrix[i][i];
@@ -1641,7 +1660,7 @@
         }
         if (diag1Complete) return { won: true, pattern: 'Diagonal Line' };
 
-        // 4. Anti-Diagonal (Top-Right to Bottom-Left)
+        // 4. Anti-Diagonal
         let diag2Complete = true;
         for (let i = 0; i < 5; i++) {
             const val = matrix[i][4 - i];
@@ -1776,7 +1795,6 @@
 
         ballsCountDisplay.textContent = `${drawnBalls.length}/75`;
 
-        // Check if user won
         for (const ticketNum of selectedTickets) {
             const matrix = generateCardMatrix(ticketNum);
             const winResult = checkTicketWin(matrix, drawnBalls);
