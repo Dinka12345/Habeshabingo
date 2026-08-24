@@ -1111,12 +1111,34 @@
     let selectedPaymentMethod = 'TeleBirr';
     let roundFinished = false;
 
-    // --- AUDIO / VOICE SYSTEM ---
+    // --- AUDIO / VOICE SYSTEM ENHANCEMENTS ---
     let isMuted = localStorage.getItem('bingo_audio_muted') === 'true';
     let currentLanguage = 'am';
+    let isAudioUnlocked = false;
     const audioToggleBtn = document.getElementById('audioToggleBtn');
     const langAmBtn = document.getElementById('langAmBtn');
     const langEnBtn = document.getElementById('langEnBtn');
+
+    // Pre-load Web Speech API voices
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
+
+    // Unlock Web Audio context on user gesture (bypasses Telegram WebView autoplay policy)
+    function unlockAudio() {
+        if (!isAudioUnlocked && 'speechSynthesis' in window) {
+            const silentUtterance = new SpeechSynthesisUtterance('');
+            silentUtterance.volume = 0;
+            window.speechSynthesis.speak(silentUtterance);
+            isAudioUnlocked = true;
+        }
+    }
+
+    // Attach unlock handlers to user click events
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('touchstart', unlockAudio, { once: true });
 
     function updateAudioIcon() {
         if (isMuted) {
@@ -1160,7 +1182,7 @@
         let voiceLang = currentLanguage === 'am' ? 'am-ET' : 'en-US';
 
         const utterance = new SpeechSynthesisUtterance(textToSpeak);
-        utterance.rate = 0.9;
+        utterance.rate = 0.95;
         utterance.pitch = 1.0;
         utterance.lang = voiceLang;
 
@@ -1366,10 +1388,9 @@
         const messageId = callbackQuery.message.message_id;
         const chatId = callbackQuery.message.chat.id;
 
-        // Parse action parameters cleanly
         const parts = callbackData.includes('|') ? callbackData.split('|') : callbackData.split('_');
-        const action = parts[0];   // approve / reject
-        const type = parts[1];     // deposit / withdraw
+        const action = parts[0];
+        const type = parts[1];
         const amount = parseFloat(parts[2]);
         const targetUserId = parts[3];
 
@@ -1383,14 +1404,12 @@
             alertMessage = `❌ Rejected ${type} request of ${amount} ETB.`;
         }
 
-        // Answer callback query to dismiss loading state on Telegram
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ callback_query_id: queryId, text: alertMessage, show_alert: true })
         });
 
-        // Edit Telegram Admin Message to remove action buttons and display resolution
         const updatedText = callbackQuery.message.text + `\n\n📌 *STATUS:* ${action === 'approve' ? '✅ APPROVED & BALANCED' : '❌ REJECTED'}`;
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText`, {
             method: "POST",
@@ -1413,7 +1432,6 @@
 
         if (supabaseClient) {
             try {
-                // Fetch current user row directly
                 const { data } = await supabaseClient
                     .from('user_profiles')
                     .select('balance')
@@ -1428,7 +1446,6 @@
 
                 const newBalance = currentBal + amountChange;
 
-                // Sync modified balance to Supabase
                 await supabaseClient
                     .from('user_profiles')
                     .upsert({ 
