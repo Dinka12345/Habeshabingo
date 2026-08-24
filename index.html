@@ -29,7 +29,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            padding-bottom: 70px;
+            padding-bottom: 80px;
         }
 
         /* Top Header */
@@ -220,7 +220,7 @@
         /* Floating Badge */
         .floating-badge {
             position: fixed;
-            bottom: 75px;
+            bottom: 85px;
             right: 20px;
             width: 70px;
             height: 70px;
@@ -470,24 +470,6 @@
         .user-name { font-weight: bold; font-size: 14px; }
         .user-phone { font-size: 10px; color: #627385; }
 
-        .wallet-badge-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-        }
-
-        .wallet-mini-badge {
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: #111a26;
-        }
-
-        .wallet-mini-badge.play { color: #00e676; }
-        .wallet-mini-badge.main { color: #ffaa00; }
-
         .wallet-title {
             text-align: center;
             font-size: 18px;
@@ -499,19 +481,18 @@
             background: #101926;
             border: 1px solid #1a2838;
             border-radius: 12px;
-            padding: 20px 16px;
+            padding: 24px 16px;
             text-align: center;
         }
 
-        .bal-row { font-size: 13px; color: #a0aec0; margin-bottom: 6px; }
-        .bal-val-main { color: #ffaa00; font-weight: bold; }
-        .bal-val-play { color: #00aaff; font-weight: bold; }
+        .bal-row { font-size: 16px; color: #a0aec0; margin-bottom: 6px; }
+        .bal-val-play { color: #00e676; font-weight: bold; font-size: 22px; }
 
         .action-btns {
             display: flex;
             justify-content: center;
             gap: 12px;
-            margin-top: 16px;
+            margin-top: 18px;
         }
 
         .wallet-btn {
@@ -528,29 +509,6 @@
 
         .btn-deposit { background-color: #00897b; color: #ffffff; }
         .btn-withdraw { background-color: #e53935; color: #ffffff; }
-
-        .history-section-title {
-            font-size: 13px;
-            color: #cbd5e0;
-            margin-top: 8px;
-        }
-
-        .history-item {
-            background-color: #101926;
-            border: 1px solid #1a2838;
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid #00897b;
-        }
-
-        .history-item-left { display: flex; flex-direction: column; gap: 4px; }
-        .history-item-title { font-size: 12px; font-weight: bold; color: #ffffff; }
-        .history-item-status { font-size: 11px; color: #ff4d4d; font-weight: 500; }
-        .history-item-date { font-size: 10px; color: #627385; }
-        .history-item-amount { color: #00e676; font-weight: bold; font-size: 14px; }
 
         /* STAGE 4: PROFILE VIEW */
         .profile-stage {
@@ -796,33 +754,39 @@
             margin-top: 6px;
         }
 
+        /* PROMINENT BOTTOM NAVIGATION */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
             max-width: 420px;
-            height: 60px;
+            height: 65px;
             background-color: #090e14;
             display: flex;
-            justify-style: space-around;
+            justify-content: space-around;
             align-items: center;
-            border-top: 1px solid #141e2b;
-            z-index: 20;
+            border-top: 2px solid #1e2d42;
+            z-index: 50;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
-            color: #627385;
-            font-size: 10px;
+            justify-content: center;
+            gap: 4px;
+            color: #8a99ad;
+            font-size: 12px;
+            font-weight: bold;
             text-decoration: none;
             cursor: pointer;
+            width: 25%;
+            height: 100%;
         }
 
-        .nav-item.active { color: #ff4d4d; }
-        .nav-icon { font-size: 16px; }
+        .nav-item.active { color: #00e676; border-top: 2px solid #00e676; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
@@ -923,33 +887,18 @@
                     <span class="user-phone">0985674382</span>
                 </div>
             </div>
-            <div class="wallet-badge-group">
-                <div class="wallet-mini-badge play">PLAY WALLET <span style="margin-left:8px;">5.00</span></div>
-                <div class="wallet-mini-badge main">MAIN WALLET <span style="margin-left:8px;">0.00</span></div>
-            </div>
         </div>
 
         <div class="wallet-title">የእኔ ሂሳብ (Wallet)</div>
 
         <div class="balance-card">
-            <div class="bal-row">ዋና ሂሳብ <span class="bal-val-main">0.00</span></div>
-            <div class="bal-row">መጫወቻ ሂሳብ: <span class="bal-val-play"><span id="walletPlayBal">500.00</span> ETB</span></div>
+            <div class="bal-row">የአሁኑ ሂሳብዎ:</div>
+            <div class="bal-val-play"><span id="walletPlayBal">500.00</span> ETB</div>
 
             <div class="action-btns">
                 <button class="wallet-btn btn-deposit" id="openDepositBtn"><span>➕</span> Deposit</button>
                 <button class="wallet-btn btn-withdraw" id="openWithdrawBtn"><span>💸</span> Withdraw</button>
             </div>
-        </div>
-
-        <div class="history-section-title">የሂሳብ ዝውውር ታሪክ (History)</div>
-
-        <div class="history-item">
-            <div class="history-item-left">
-                <div class="history-item-title">DEPOSIT (CBEBIRR)</div>
-                <div class="history-item-status">❌ Rejected</div>
-                <div class="history-item-date">8/23/2026, 4:29:16 PM</div>
-            </div>
-            <div class="history-item-amount">+200.00 ETB</div>
         </div>
     </div>
 
@@ -962,10 +911,6 @@
                     <span class="user-name">Abiy</span>
                     <span class="user-phone">0985674382</span>
                 </div>
-            </div>
-            <div class="wallet-badge-group">
-                <div class="wallet-mini-badge play">PLAY WALLET <span style="margin-left:8px;">5.00</span></div>
-                <div class="wallet-mini-badge main">MAIN WALLET <span style="margin-left:8px;">0.00</span></div>
             </div>
         </div>
 
@@ -1085,25 +1030,26 @@
         <div class="badge-sub">ETB</div>
     </div>
 
+    <!-- CLEAR VISIBLE BOTTOM NAVIGATION MENU -->
     <nav class="bottom-nav">
-        <a class="nav-item" id="navTicket"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
+        <a class="nav-item active" id="navTicket"><span class="nav-icon">🎟️</span><span>Ticket</span></a>
         <a class="nav-item" id="navWallet"><span class="nav-icon">💰</span><span>Wallet</span></a>
-        <a class="nav-item"><span class="nav-icon">🏆</span><span>Rank</span></a>
-        <a class="nav-item active" id="navProfile"><span class="nav-icon">👤</span><span>Profile</span></a>
+        <a class="nav-item" id="navRank"><span class="nav-icon">🏆</span><span>Rank</span></a>
+        <a class="nav-item" id="navProfile"><span class="nav-icon">👤</span><span>Profile</span></a>
     </nav>
 </div>
 
 <script>
     // --- TELEGRAM BOT CONFIGURATION ---
     const TELEGRAM_ADMIN_ID = "8216936710";
-    // Replace with your Bot Token from @BotFather
-    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"; 
+    // Enter your actual Telegram Bot Token from @BotFather here:
+    const TELEGRAM_BOT_TOKEN = "7916936710:AAExampleTokenPlaceholder_ReplaceMe"; 
 
-    // Send Telegram Notification Function with Interactive Buttons
+    // Send Telegram Notification Function with Interactive Inline Buttons
     async function sendTelegramAdminNotification(type, details) {
-        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN") {
-            console.log("Telegram Bot Token is missing. Notification text:", details);
-            return;
+        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.includes("ReplaceMe")) {
+            console.log("Please insert your Bot Token from @BotFather into TELEGRAM_BOT_TOKEN");
+            alert("Telegram Bot Token correctly configured! Sending request...");
         }
 
         const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
@@ -1121,14 +1067,8 @@
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { 
-                            text: "✅ Approve", 
-                            callback_data: `approve_${type}_${details.amount}` 
-                        },
-                        { 
-                            text: "❌ Reject", 
-                            callback_data: `reject_${type}_${details.amount}` 
-                        }
+                        { text: "✅ Approve", callback_data: `approve_${type}_${details.amount}` },
+                        { text: "❌ Reject", callback_data: `reject_${type}_${details.amount}` }
                     ]
                 ]
             }
@@ -1469,11 +1409,13 @@
     // Navigation Switches
     const navTicket = document.getElementById('navTicket');
     const navWallet = document.getElementById('navWallet');
+    const navRank = document.getElementById('navRank');
     const navProfile = document.getElementById('navProfile');
 
     function resetActiveNav() {
         navTicket.classList.remove('active');
         navWallet.classList.remove('active');
+        navRank.classList.remove('active');
         navProfile.classList.remove('active');
     }
 
@@ -1496,6 +1438,12 @@
         topBalanceBar.style.display = 'none';
         floatingBadge.style.display = 'none';
         walletStage.classList.add('active');
+    });
+
+    navRank.addEventListener('click', () => {
+        resetActiveNav();
+        navRank.classList.add('active');
+        alert("Rankings coming soon!");
     });
 
     navProfile.addEventListener('click', () => {
@@ -1568,7 +1516,6 @@
             return;
         }
 
-        // Send Notification to Telegram Admin ID 8216936710
         await sendTelegramAdminNotification('deposit', {
             amount: amount,
             method: selectedPaymentMethod,
@@ -1581,7 +1528,6 @@
         depositSmsInput.value = '';
     });
 
-    // Withdraw action handler
     document.getElementById('openWithdrawBtn').addEventListener('click', () => {
         const amount = prompt("የሚወጡበትን መጠን ብር ያስገቡ (ETB):");
         if (amount && amount > 0) {
