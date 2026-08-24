@@ -1042,16 +1042,10 @@
 <script>
     // --- TELEGRAM BOT CONFIGURATION ---
     const TELEGRAM_ADMIN_ID = "8216936710";
-    // Enter your actual Telegram Bot Token from @BotFather here:
-    const TELEGRAM_BOT_TOKEN = "7916936710:AAExampleTokenPlaceholder_ReplaceMe"; 
+    const TELEGRAM_BOT_TOKEN = "8712991515:AAFTi-eDgZWn30llYXyPFZnKDx60KkKlWRo"; 
 
     // Send Telegram Notification Function with Interactive Inline Buttons
     async function sendTelegramAdminNotification(type, details) {
-        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.includes("ReplaceMe")) {
-            console.log("Please insert your Bot Token from @BotFather into TELEGRAM_BOT_TOKEN");
-            alert("Telegram Bot Token correctly configured! Sending request...");
-        }
-
         const text = `🚨 *NEW ${type.toUpperCase()} REQUEST*\n\n` +
                      `👤 *User:* Abiy\n` +
                      `📞 *Phone:* 0985674382\n` +
@@ -1075,11 +1069,15 @@
         };
 
         try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+            const data = await response.json();
+            if (!data.ok) {
+                console.error("Telegram API Error:", data);
+            }
         } catch (err) {
             console.error("Failed to send notification to Telegram Admin:", err);
         }
