@@ -804,7 +804,7 @@
             height: 60px;
             background-color: #090e14;
             display: flex;
-            justify-content: space-around;
+            justify-style: space-around;
             align-items: center;
             border-top: 1px solid #141e2b;
             z-index: 20;
@@ -870,7 +870,7 @@
 
         <div class="selected-tickets-panel" id="ticketsPreviewPanel">
             <div class="panel-header">
-                <span>የመረጧቸው ካርቴላዎች: <span id="panelCount">0</span></span>
+                <span>የመረቷቸው ካርቴላዎች: <span id="panelCount">0</span></span>
                 <span style="color: #00e676;"><span id="panelCost">0</span> ETB</span>
             </div>
             <div class="cards-list" id="previewCardsContainer"></div>
@@ -1097,9 +1097,9 @@
     // --- TELEGRAM BOT CONFIGURATION ---
     const TELEGRAM_ADMIN_ID = "8216936710";
     // Replace with your Bot Token from @BotFather
-    const TELEGRAM_BOT_TOKEN = "8712991515:AAFTi-eDgZWn30llYXyPFZnKDx60KkKlWRo"; 
+    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"; 
 
-    // Send Telegram Notification Function
+    // Send Telegram Notification Function with Interactive Buttons
     async function sendTelegramAdminNotification(type, details) {
         if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN") {
             console.log("Telegram Bot Token is missing. Notification text:", details);
@@ -1112,18 +1112,33 @@
                      `🆔 *User ID:* #6a8ae35d6a931c04a3e4eba7\n` +
                      `💵 *Amount:* ${details.amount} ETB\n` +
                      `🏦 *Method:* ${details.method}\n` +
-                     `📄 *SMS/Proof:* \n${details.sms}\n\n` +
-                     `Please approve or reject in the admin panel.`;
+                     `📄 *SMS/Proof:* \n${details.sms}`;
+
+        const payload = {
+            chat_id: TELEGRAM_ADMIN_ID,
+            text: text,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { 
+                            text: "✅ Approve", 
+                            callback_data: `approve_${type}_${details.amount}` 
+                        },
+                        { 
+                            text: "❌ Reject", 
+                            callback_data: `reject_${type}_${details.amount}` 
+                        }
+                    ]
+                ]
+            }
+        };
 
         try {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_ADMIN_ID,
-                    text: text,
-                    parse_mode: "Markdown"
-                })
+                body: JSON.stringify(payload)
             });
         } catch (err) {
             console.error("Failed to send notification to Telegram Admin:", err);
